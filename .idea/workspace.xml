@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="db schema created&#10;Separation of flac and mp3 file metadata functionality added&#10;image in response ignored due to its large size so need separate api for image">
+    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="code cleanup">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/MetadataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/MetadataService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/AlbumArtExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/AlbumArtExtractor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/FlacMetadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/FlacMetadata.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,12 +132,21 @@
       <option name="project" value="LOCAL" />
       <updated>1757358752874</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="code cleanup">
+      <option name="closed" value="true" />
+      <created>1757358852217</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1757358852217</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="db schema created&#10;Separation of flac and mp3 file metadata functionality added&#10;image in response ignored due to its large size so need separate api for image" />
-    <option name="LAST_COMMIT_MESSAGE" value="db schema created&#10;Separation of flac and mp3 file metadata functionality added&#10;image in response ignored due to its large size so need separate api for image" />
+    <MESSAGE value="code cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
