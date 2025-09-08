@@ -1,4 +1,4 @@
-package org.media.server.utils;
+package org.example.utils;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -35,7 +35,7 @@ public class AlbumArtExtractor {
                 if(imageData == null){
                     Resource resource = resourceLoader.getResource("classpath:" + "images/no_album_art.png");
 
-                            return Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+                    return Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
                 }else {
                     String base64Image = Base64.getEncoder().encodeToString(imageData);
                     return base64Image;

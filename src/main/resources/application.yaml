@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: ${SPRING_APP_NAME:Audio player BE}
+  datasource:
+    url: jdbc:mysql://localhost:3306/audio_player?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: root
+    password: mysql
+  sql:
+    init:
+      mode: ALWAYS    #change it accordingly
+#      schema-locations: classpath:/sql/schema.sql
+      data-locations: classpath:/sql/data.sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  output:
+    ansi:
+      enabled: ALWAYS
+      console-available: true
+
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+
+
+logging:
+  pattern:
+    console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
+  level:
+    root: INFO
+    spring:
+      security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
+server:
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:120s}
+
+metadata:
+  folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track
