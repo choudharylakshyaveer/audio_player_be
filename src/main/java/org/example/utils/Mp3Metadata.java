@@ -103,9 +103,7 @@ public class Mp3Metadata {
                 AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
                 AudioTrack.AudioTrackBuilder trackBuilder = AudioTrack.builder();
                 trackBuilder.attached_picture(extractAlbumArt);
-                System.out.println("___________________________________");
 
-                // Extract via FieldKey (works across formats)
                 try {
                     String title = normalizeText(tag.getFirst(FieldKey.TITLE));
                     audioTrackIdBuilder.title(title);

@@ -39,10 +39,6 @@ public class FlacMetadata {
     @Bean
     public List<AudioTrack> getFlacTracks(File[] files) {
         List<AudioTrack> audioTracks = new ArrayList<>();
-//        File folder = new File("C:\\Users\\choud\\Downloads\\Top 50 Single Track");
-//        File folder = new File("H:\\audio_songs");
-//        File folder = new File("C:\\Users\\choud\\Downloads\\Telegram Desktop");
-//        File[] files = folder.listFiles((dir, name) -> name.matches(".*\\.(flac)$"));
         Arrays.stream(files).forEach(
                 file -> {
                     AudioTrack.AudioTrackBuilder audioTrackBuilder = AudioTrack.builder();
@@ -74,13 +70,6 @@ public class FlacMetadata {
                         String year = String.valueOf(LocalDate.parse(audioFile.getTag().getFields("DATE").getFirst().toString()).getYear());
                         audioTrackBuilder.year(year);
                     }
-
-
-                    /*if (((FlacTag) audioFile.getTag()).getImages().size()>0){
-                        String imageData = ((FlacTag) audioFile.getTag()).getImages().getFirst()
-                                .getImageData().toString();
-                        audioTrackBuilder.image(imageData);
-                    }*/
                     try {
                         audioTrackBuilder.attached_picture(albumArtExtractor.extractAlbumArt(file));
                     } catch (Exception e) {

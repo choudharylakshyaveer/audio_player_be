@@ -30,15 +30,6 @@ public class MetadataService {
 
     public Set<AudioTrack> saveMetadata() {
         Set<AudioTrack> audioTracks = new HashSet<>();
-//        File folder = new File("H:\\audio_songs");
-//        File folder = new File("C:\\Users\\choud\\Downloads\\Top 50 Single Track");
-//        List<File> folders = new ArrayList<>();
-//        folders.add(new File("H:\\audio_songs"));
-//        folders.add(new File("C:\\Users\\choud\\Downloads\\Top 50 Single Track"));
-
-
-//        List<AudioTrack> flacFilesMetadata = null;
-//        List<AudioTrack> mp3FilesMetadata = null;
 
         for (String folderPath : folderPaths) {
             File folder = new File(folderPath);
