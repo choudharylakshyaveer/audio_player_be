@@ -1,4 +1,4 @@
-package org.media.server.utils;
+package org.example.utils;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -10,12 +10,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 
 @Service
 public class AlbumArtExtractor {
@@ -35,7 +31,7 @@ public class AlbumArtExtractor {
                 if(imageData == null){
                     Resource resource = resourceLoader.getResource("classpath:" + "images/no_album_art.png");
 
-                            return Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
+                    return Base64.getEncoder().encodeToString(resource.getContentAsByteArray());
                 }else {
                     String base64Image = Base64.getEncoder().encodeToString(imageData);
                     return base64Image;
