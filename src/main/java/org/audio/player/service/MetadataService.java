@@ -1,15 +1,14 @@
-package org.example.service;
+package org.audio.player.service;
 
-import org.example.entity.AudioTrack;
-import org.example.repository.AudioTrackRepo;
-import org.example.utils.FlacMetadata;
-import org.example.utils.Mp3Metadata;
+import org.audio.player.entity.AudioTrack;
+import org.audio.player.repository.AudioTrackRepo;
+import org.audio.player.utils.FlacMetadata;
+import org.audio.player.utils.Mp3Metadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

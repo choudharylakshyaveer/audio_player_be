@@ -1,4 +1,4 @@
-package org.example.converter;
+package org.audio.player.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

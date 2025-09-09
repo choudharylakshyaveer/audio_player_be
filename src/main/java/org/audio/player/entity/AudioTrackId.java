@@ -1,11 +1,9 @@
-package org.example.entity;
+package org.audio.player.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.converter.StringListConverter;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Embeddable
 @Data
