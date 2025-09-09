@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.audio.player.utils;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -6,8 +6,8 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
-import org.example.entity.AudioTrack;
-import org.example.entity.AudioTrackId;
+import org.audio.player.entity.AudioTrack;
+import org.audio.player.entity.AudioTrackId;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -91,6 +91,7 @@ public class Mp3Metadata {
 
         Arrays.stream(files).forEach(file -> {
             try {
+
                 String extractAlbumArt = null;
                 try {
                     extractAlbumArt = albumArtExtractor.extractAlbumArt(file);
@@ -103,6 +104,8 @@ public class Mp3Metadata {
                 AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
                 AudioTrack.AudioTrackBuilder trackBuilder = AudioTrack.builder();
                 trackBuilder.attached_picture(extractAlbumArt);
+                String filePath = file.getAbsolutePath();
+                trackBuilder.filePath(filePath);
 
                 try {
                     String title = normalizeText(tag.getFirst(FieldKey.TITLE));

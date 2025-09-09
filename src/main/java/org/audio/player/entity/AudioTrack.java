@@ -1,11 +1,9 @@
-package org.example.entity;
+package org.audio.player.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.converter.StringListConverter;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.audio.player.converter.StringListConverter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,5 +66,7 @@ public class AudioTrack implements Serializable {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean lossless = false;
+
+    private String filePath;
 
 }

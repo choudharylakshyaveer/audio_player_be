@@ -1,18 +1,14 @@
-package org.example.utils;
+package org.audio.player.utils;
 
-import lombok.extern.slf4j.Slf4j;
-import org.example.entity.AudioTrack;
-import org.example.entity.AudioTrackId;
+import org.audio.player.entity.AudioTrack;
+import org.audio.player.entity.AudioTrackId;
 import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioHeader;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.audio.flac.FlacFileReader;
 import org.jaudiotagger.audio.mp3.MP3FileReader;
-import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.flac.FlacTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
@@ -20,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +45,9 @@ public class FlacMetadata {
                     audioTrackBuilder.album_movie_show_title(title);
                     String artist = audioFile.getTag().getFields("ARTIST").getFirst().toString();
                     audioTrackBuilder.artists(List.of(artist));
+
+                    String filePath = file.getAbsolutePath();
+                    audioTrackBuilder.filePath(filePath);
 
                     String albumArtist = getFieldValue(audioFile, "ALBUMARTIST");
                     audioTrackBuilder.albumArtist(albumArtist);

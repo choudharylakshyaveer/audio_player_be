@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.audio.player.utils;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
