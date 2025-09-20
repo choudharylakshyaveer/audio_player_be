@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="code cleanup">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MediaServerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/MediaServerApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/AudioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/controller/AudioController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/converter/StringListConverter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/converter/StringListConverter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/AudioTrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/entity/AudioTrack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/AudioTrackId.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/entity/AudioTrackId.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/repository/AudioTrackRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/repository/AudioTrackRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/MetadataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/service/MetadataService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/AlbumArtExtractor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/utils/AlbumArtExtractor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/FlacMetadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/utils/FlacMetadata.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/Mp3Metadata.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/utils/Mp3Metadata.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="code cleanup" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -58,7 +45,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "cors__config",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/choud/apps/audio_player_be/src/main/resources/images",
     "project.structure.last.edited": "Project",
