@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="NA">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="git ignore update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,6 +43,7 @@
     "Application.MetadataDBUtility.executor": "Run",
     "Application.org.audio.player.MediaServerApplication.executor": "Run",
     "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "Maven.audio_player_be [clean,compile,install].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -62,6 +62,11 @@
       <recent name="C:\Users\choud\apps\audio_player_be\src\main\resources\images" />
       <recent name="C:\Users\choud\apps\audio_player_be\src\main\resources" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean compile install" />
+    </option>
   </component>
   <component name="RunManager" selected="Application.org.audio.player.MediaServerApplication">
     <configuration name="FlacMetadata" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -168,14 +173,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758396259738</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="git ignore update">
+      <option name="closed" value="true" />
+      <created>1758397570721</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1758397570721</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="db schema created&#10;Separation of flac and mp3 file metadata functionality added&#10;image in response ignored due to its large size so need separate api for image" />
     <MESSAGE value="code cleanup" />
     <MESSAGE value="NA" />
-    <option name="LAST_COMMIT_MESSAGE" value="NA" />
+    <MESSAGE value="git ignore update" />
+    <option name="LAST_COMMIT_MESSAGE" value="git ignore update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
