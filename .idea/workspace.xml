@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="code cleanup" />
+    <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="Albums API functionality addition" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,7 +20,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="file_path_add_to_schema" />
+        <entry key="$PROJECT_DIR$" value="develop" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,17 +41,18 @@
     "Application.MetadataDBUtility.executor": "Run",
     "Application.org.audio.player.MediaServerApplication.executor": "Run",
     "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "Maven.audio_player_be [clean,compile,install].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "albums__api",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/choud/apps/audio_player_be/src/main/resources/images",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "Console"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -59,6 +60,11 @@
       <recent name="C:\Users\choud\apps\audio_player_be\src\main\resources\images" />
       <recent name="C:\Users\choud\apps\audio_player_be\src\main\resources" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean compile install" />
+    </option>
   </component>
   <component name="RunManager" selected="Application.org.audio.player.MediaServerApplication">
     <configuration name="FlacMetadata" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -127,9 +133,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.org.audio.player.MediaServerApplication" />
+        <item itemvalue="Application.MetadataDBUtility" />
         <item itemvalue="Application.MediaServerApplication" />
         <item itemvalue="Application.FlacMetadata" />
-        <item itemvalue="Application.MetadataDBUtility" />
+        <item itemvalue="Application.org.audio.player.MediaServerApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -157,13 +164,40 @@
       <option name="project" value="LOCAL" />
       <updated>1757358852217</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="NA">
+      <option name="closed" value="true" />
+      <created>1758396259737</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1758396259738</updated>
+    </task>
+    <task id="LOCAL-00004" summary="git ignore update">
+      <option name="closed" value="true" />
+      <created>1758397570721</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1758397570721</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Albums API functionality addition">
+      <option name="closed" value="true" />
+      <created>1758789216817</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1758789216817</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="db schema created&#10;Separation of flac and mp3 file metadata functionality added&#10;image in response ignored due to its large size so need separate api for image" />
     <MESSAGE value="code cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="code cleanup" />
+    <MESSAGE value="NA" />
+    <MESSAGE value="git ignore update" />
+    <MESSAGE value="Albums API functionality addition" />
+    <option name="LAST_COMMIT_MESSAGE" value="Albums API functionality addition" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -174,16 +208,6 @@
           <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/service/MetadataService.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="63" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/service/MetadataService.java</url>
-          <line>47</line>
-          <option name="timeStamp" value="64" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/utils/FlacMetadata.java</url>
           <line>76</line>
           <option name="timeStamp" value="65" />
@@ -192,6 +216,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/utils/AlbumArtExtractor.java</url>
           <line>22</line>
           <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/controller/AudioController.java</url>
+          <line>31</line>
+          <option name="timeStamp" value="67" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
