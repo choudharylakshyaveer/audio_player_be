@@ -34,9 +34,13 @@ logging:
     spring:
       security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
 server:
+  port: 8082
   servlet:
     session:
       timeout: ${SESSION_TIMEOUT:120s}
+security:
+  jwt:
+    secret: superSecretKey12345678901234567890
 
 metadata:
   folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track
