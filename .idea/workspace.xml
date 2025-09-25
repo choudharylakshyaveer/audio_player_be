@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be3c2e25-b4c7-41a8-9026-ff971d00d16d" name="Changes" comment="git ignore update">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/dto/AlbumsDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/audio/player/controller/AudioController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/controller/AudioController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/audio/player/repository/AudioTrackRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/audio/player/repository/AudioTrackRepo.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,20 +44,20 @@
     "Application.FlacMetadata.executor": "Debug",
     "Application.MediaServerApplication.executor": "Run",
     "Application.MetadataDBUtility.executor": "Run",
-    "Application.org.audio.player.MediaServerApplication.executor": "Run",
+    "Application.org.audio.player.MediaServerApplication.executor": "Debug",
     "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
     "Maven.audio_player_be [clean,compile,install].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "git__ignore__update",
+    "git-widget-placeholder": "albums__api",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/choud/apps/audio_player_be/src/main/resources/images",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "Console"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -135,9 +138,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.org.audio.player.MediaServerApplication" />
+        <item itemvalue="Application.MetadataDBUtility" />
         <item itemvalue="Application.MediaServerApplication" />
         <item itemvalue="Application.FlacMetadata" />
-        <item itemvalue="Application.MetadataDBUtility" />
+        <item itemvalue="Application.org.audio.player.MediaServerApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -200,16 +204,6 @@
           <option name="timeStamp" value="57" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/service/MetadataService.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="63" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/service/MetadataService.java</url>
-          <line>47</line>
-          <option name="timeStamp" value="64" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/utils/FlacMetadata.java</url>
           <line>76</line>
           <option name="timeStamp" value="65" />
@@ -218,6 +212,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/utils/AlbumArtExtractor.java</url>
           <line>22</line>
           <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/audio/player/controller/AudioController.java</url>
+          <line>31</line>
+          <option name="timeStamp" value="67" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
