@@ -50,3 +50,15 @@ cors:
     - "http://100.125.57.120:3000"
     - "http://localhost:3000"
     - "100.125.57.120:3000"
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  allowed-headers:
+    - Authorization
+    - Content-Type
+  exposed-headers:
+    - Authorization
+  allow-credentials: true
