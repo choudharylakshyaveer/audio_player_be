@@ -1,15 +1,16 @@
 package org.audio.player.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
 @Configuration
 public class CorsConfig {
+
 
     private final CorsProperties corsProperties;
 
@@ -18,16 +19,16 @@ public class CorsConfig {
     }
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins(corsProperties.getAllowedOrigins().toArray(new String[0]))
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(corsProperties.getAllowedOrigins());
+        config.setAllowedMethods(corsProperties.getAllowedMethods());
+        config.setAllowedHeaders(corsProperties.getAllowedHeaders());
+        config.setExposedHeaders(corsProperties.getExposedHeaders());
+        config.setAllowCredentials(corsProperties.getAllowCredentials());
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

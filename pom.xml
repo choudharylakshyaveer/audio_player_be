@@ -101,7 +101,7 @@
             <version>2.19.0</version>
         </dependency>
 
-        <!-- Spring Boot Security
+<!--         Spring Boot Security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -111,7 +111,7 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency>-->
+        </dependency>
         <!-- Dependencies for jwt  -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

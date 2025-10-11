@@ -13,12 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 
 @Component
-public class JwtFilter implements Filter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final SecretKey secretKey;
 
@@ -27,7 +28,7 @@ public class JwtFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -56,7 +57,7 @@ public class JwtFilter implements Filter {
             request.setAttribute("username", username);
             request.setAttribute("roles", roles);
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
 
         } catch (Exception e) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
