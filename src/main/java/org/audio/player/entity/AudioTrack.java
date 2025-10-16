@@ -28,6 +28,7 @@ public class AudioTrack implements Serializable {
     @Column(columnDefinition = "TEXT")
     private List<String> authors;
 
+    //TODO : Create annotation to replace the text like DjDholl.com etc
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "TEXT")
     private List<String> artists;
@@ -68,5 +69,6 @@ public class AudioTrack implements Serializable {
     private boolean lossless = false;
 
     private String filePath;
+
 
 }

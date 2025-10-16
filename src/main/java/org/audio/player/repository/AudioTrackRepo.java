@@ -12,7 +12,9 @@ public interface AudioTrackRepo extends JpaRepository<AudioTrack, Long> {
 
     @Query("select distinct a.audioTrack.album as album, a.attached_picture as attachedPicture " +
             "from AudioTrack a " )
-
     Set<AlbumsDTO> getAlbums();
+
+    Set<AudioTrack> findByAudioTrack_AlbumIgnoreCase(String album);
+
 
 }

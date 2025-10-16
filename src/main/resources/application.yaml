@@ -49,7 +49,6 @@ cors:
   allowed-origins:
     - "http://100.125.57.120:3000"
     - "http://localhost:3000"
-    - "100.125.57.120:3000"
   allowed-methods:
     - GET
     - POST
