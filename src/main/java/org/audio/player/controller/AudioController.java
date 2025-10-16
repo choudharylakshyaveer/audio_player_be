@@ -8,6 +8,7 @@ import org.audio.player.service.MetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
@@ -30,5 +31,10 @@ public class AudioController {
     @GetMapping("/albums")
     public ResponseEntity<Set<AlbumsDTO>> getAlbums(){
         return ResponseEntity.ok(albumsService.getAlbums());
+    }
+
+    @GetMapping("/albums/{albumName}")
+    public ResponseEntity<Set<AudioTrack>> getAlbumTracks(@PathVariable String albumName){
+        return ResponseEntity.ok(albumsService.getAudioTrackByAlbum(albumName));
     }
 }
