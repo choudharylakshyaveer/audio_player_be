@@ -1,7 +1,6 @@
 package org.audio.player.utils;
 
 import org.audio.player.entity.AudioTrack;
-import org.audio.player.entity.AudioTrackId;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
@@ -37,7 +36,7 @@ public class FlacMetadata {
                 file -> {
                     AudioTrack.AudioTrackBuilder audioTrackBuilder = AudioTrack.builder();
                     audioTrackBuilder.fileName(file.getName());
-                    AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
+//                    AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
                     AudioFile audioFile = getAudioFile(file);
                     String vendor = audioFile.getTag().getFields("VENDOR").getFirst().toString();
                     audioTrackBuilder.vendor(vendor);
@@ -53,7 +52,7 @@ public class FlacMetadata {
                     audioTrackBuilder.albumArtist(albumArtist);
 
                     String album = getFieldValue(audioFile, "ALBUM");
-                    audioTrackIdBuilder.album(album);
+                    audioTrackBuilder.album(album);
 
                     String genre = getFieldValue(audioFile, "GENRE");
                     audioTrackBuilder.genre(genre);
@@ -91,7 +90,7 @@ public class FlacMetadata {
 }
                     Boolean lossless = audioFile.getAudioHeader().isLossless();
                     audioTrackBuilder.lossless(lossless);
-                    audioTrackBuilder.audioTrack(audioTrackIdBuilder.build());
+//                    audioTrackBuilder.audioTrack(audioTrackIdBuilder.build());
 
                     audioTracks.add(audioTrackBuilder.build());
 

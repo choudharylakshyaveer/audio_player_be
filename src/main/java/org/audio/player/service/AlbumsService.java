@@ -25,7 +25,7 @@ public class AlbumsService {
 
     public Set<AudioTrack> getAudioTrackByAlbum(String albumName){
         log.info("albumName: {1}", albumName);
-        Set<AudioTrack> byAudioTrackAlbumIgnoreCase = audioTrackRepo.findByAudioTrack_AlbumIgnoreCase(albumName);
+        Set<AudioTrack> byAudioTrackAlbumIgnoreCase = audioTrackRepo.findByAlbumIgnoreCase(albumName);
         Stream<AudioTrack> audioTrackStream = byAudioTrackAlbumIgnoreCase.stream().map(audioTrack -> {
             audioTrack.setAlbum_movie_show_title("");
             return audioTrack;

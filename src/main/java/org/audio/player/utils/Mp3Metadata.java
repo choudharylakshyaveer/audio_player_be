@@ -7,7 +7,7 @@ import org.apache.tika.parser.CompositeParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.audio.player.entity.AudioTrack;
-import org.audio.player.entity.AudioTrackId;
+//import org.audio.player.entity.AudioTrackId;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -101,7 +101,7 @@ public class Mp3Metadata {
                 AudioFile audioFile = AudioFileIO.read(file);
                 Tag tag = audioFile.getTag();
 
-                AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
+//                AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
                 AudioTrack.AudioTrackBuilder trackBuilder = AudioTrack.builder();
                 trackBuilder.attached_picture(extractAlbumArt);
                 String filePath = file.getAbsolutePath();
@@ -109,16 +109,18 @@ public class Mp3Metadata {
 
                 try {
                     String title = normalizeText(tag.getFirst(FieldKey.TITLE));
-                    audioTrackIdBuilder.title(title);
+                    trackBuilder.title(title);
                     System.out.println("title: " + title);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     String album = normalizeText(tag.getFirst(FieldKey.ALBUM));
-                    audioTrackIdBuilder.album(album);
+                    trackBuilder.album(album);
                     trackBuilder.album_movie_show_title(album);
                     System.out.println("album: " + album);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     String artist = normalizeText(tag.getFirst(FieldKey.ARTIST));
@@ -127,31 +129,36 @@ public class Mp3Metadata {
                         trackBuilder.artists(artists);
                         System.out.println("artists: " + artists);
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     String genre = normalizeText(tag.getFirst(FieldKey.GENRE));
                     trackBuilder.genre(genre);
                     System.out.println("genre: " + genre);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     String year = normalizeText(tag.getFirst(FieldKey.YEAR));
                     trackBuilder.year(year);
                     System.out.println("year: " + year);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     String comments = normalizeText(tag.getFirst(FieldKey.COMMENT));
                     trackBuilder.comments(comments);
                     System.out.println("comments: " + comments);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     String composer = normalizeText(tag.getFirst(FieldKey.COMPOSER));
                     trackBuilder.composer(composer);
                     System.out.println("composer: " + composer);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 // 🔹 Run Apache Tika for extra metadata
                 ContentHandler handler = new DefaultHandler();
@@ -181,7 +188,8 @@ public class Mp3Metadata {
                                     int channels = Integer.parseInt(metadata.get(name));
                                     trackBuilder.channels(channels);
                                     System.out.println("channels: " + channels);
-                                } catch (NumberFormatException ignored) {}
+                                } catch (NumberFormatException ignored) {
+                                }
                             }
                             case "Author" -> {
                                 String author = metadata.get(name);
@@ -206,11 +214,11 @@ public class Mp3Metadata {
                 }
 
                 // 🔹 Build final AudioTrack
-                AudioTrackId audioTrackId = audioTrackIdBuilder.build();
+                trackBuilder.fileExtension(normalizeText(getFileExtension(audioFile.getFile().getName())));
+//                AudioTrackId audioTrackId = audioTrackIdBuilder.build();
                 trackBuilder.fileName(normalizeText(audioFile.getFile().getName()));
                 trackBuilder.format("mp3");
-                trackBuilder.fileExtension(normalizeText(getFileExtension(audioFile.getFile().getName())));
-                trackBuilder.audioTrack(audioTrackId);
+//                trackBuilder.audioTrack(audioTrackId);
 
                 AudioTrack audioTrack = trackBuilder.build();
                 audioTracks.add(audioTrack);

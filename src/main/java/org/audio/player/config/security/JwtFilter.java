@@ -1,14 +1,8 @@
-package org.audio.player.config;
+package org.audio.player.config.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,28 +28,28 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        String header = httpRequest.getHeader("Authorization");
-
-        if (header == null || !header.startsWith("Bearer ")) {
-            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().write("Missing or invalid Authorization header");
-            return;
-        }
-
-        String token = header.substring(7);
+//        String header = httpRequest.getHeader("Authorization");
+//
+//        if (header == null || !header.startsWith("Bearer ")) {
+//            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            httpResponse.getWriter().write("Missing or invalid Authorization header");
+//            return;
+//        }
+//
+//        String token = header.substring(7);
 
         try {
-            Jws<Claims> jws = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token);
-
-            Claims claims = jws.getPayload();
-            String username = claims.getSubject();
-            Object roles = claims.get("roles");
-
-            request.setAttribute("username", username);
-            request.setAttribute("roles", roles);
+//            Jws<Claims> jws = Jwts.parser()
+//                    .verifyWith(secretKey)
+//                    .build()
+//                    .parseSignedClaims(token);
+//
+//            Claims claims = jws.getPayload();
+//            String username = claims.getSubject();
+//            Object roles = claims.get("roles");
+//
+//            request.setAttribute("username", username);
+//            request.setAttribute("roles", roles);
 
             filterChain.doFilter(request, response);
 

@@ -1,4 +1,4 @@
-package org.audio.player.config;
+package org.audio.player.config.cors;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
