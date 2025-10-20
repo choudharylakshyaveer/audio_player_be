@@ -2,19 +2,19 @@ package org.audio.player.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+@Profile("!prod")
 @Configuration
-public class SecurityConfig {
+public class SecurityConfigLocal {
 
-    private final JwtFilter jwtFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
-    public SecurityConfig(JwtFilter jwtFilter, CorsConfigurationSource corsConfigurationSource) {
-        this.jwtFilter = jwtFilter;
+    public SecurityConfigLocal( CorsConfigurationSource corsConfigurationSource) {
         this.corsConfigurationSource = corsConfigurationSource;
     }
 
@@ -28,8 +28,7 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
-                )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                );
 
         return http.build();
     }
