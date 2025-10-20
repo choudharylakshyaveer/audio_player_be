@@ -1,6 +1,4 @@
 spring:
-#  profiles:
-#    active: local
   application:
     name: ${SPRING_APP_NAME:Audio player BE}
   datasource:
