@@ -44,6 +44,9 @@ security:
 
 metadata:
   folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track
+  replacements:
+    from: [ "(DJJOhAL.Com)", "(RiskyjaTT.CoM)" ]
+    to: ""
 
 cors:
   allowed-origins:

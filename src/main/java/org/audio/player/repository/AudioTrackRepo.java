@@ -10,11 +10,11 @@ import java.util.Set;
 
 public interface AudioTrackRepo extends JpaRepository<AudioTrack, Long> {
 
-    @Query("select distinct a.audioTrack.album as album, a.attached_picture as attachedPicture " +
+    @Query("select distinct a.album as album, a.attached_picture as attachedPicture " +
             "from AudioTrack a " )
     Set<AlbumsDTO> getAlbums();
 
-    Set<AudioTrack> findByAudioTrack_AlbumIgnoreCase(String album);
+//    Set<AudioTrack> findByAudioTrack_AlbumIgnoreCase(String album);
 
-
+    Set<AudioTrack> findByAlbumIgnoreCase(String album);
 }
