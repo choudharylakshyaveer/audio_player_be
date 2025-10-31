@@ -1,3 +1,9 @@
+server:
+  port: 8082
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:120s}
+
 spring:
 #  profiles:
 #    active: local
@@ -35,11 +41,6 @@ logging:
     root: INFO
     spring:
       security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
-server:
-  port: 8082
-  servlet:
-    session:
-      timeout: ${SESSION_TIMEOUT:120s}
 security:
   jwt:
     secret: superSecretKey12345678901234567890

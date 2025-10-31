@@ -7,7 +7,6 @@ import org.audio.player.entity.AudioTrack;
 import org.audio.player.repository.AudioTrackRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,4 +32,7 @@ public class AlbumsService {
         return byAudioTrackAlbumIgnoreCase;
     }
 
+    public String getAlbumImageById(Long id) {
+        return audioTrackRepo.findById(id).get().getAttached_picture();
+    }
 }
