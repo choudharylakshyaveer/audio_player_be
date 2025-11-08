@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -123,7 +124,17 @@ public class AudioController {
             @PathVariable Long id){
         return ResponseEntity.ok(albumsService.getAlbumImageById(id));
     }
-    
+
+    @GetMapping("/column/{columnName}")
+    public ResponseEntity<List<String>> getTracksByColumn(@PathVariable String columnName){
+        return ResponseEntity.ok(audioService.getDistinctDataForOneCol(columnName));
+    }
+
+    @GetMapping("/column/{columnName}/{filterValue}")
+    public ResponseEntity<List<AudioTrack>> getTracksByColumnFilter(@PathVariable String columnName, @PathVariable String filterValue){
+        return ResponseEntity.ok(audioService.getTracksByColumnFilter(columnName, filterValue));
+    }
+
     // Example implementation — adapt to your storage
     private Path locateSource(Long trackId) {
         AudioTrack audioTrackById = audioService.getAudioTrackById(trackId);
@@ -133,6 +144,6 @@ public class AudioController {
         if (!Files.exists(p)) throw new IllegalArgumentException("source not found: " + p);
         return p;
     }
-    
+
     
 }
