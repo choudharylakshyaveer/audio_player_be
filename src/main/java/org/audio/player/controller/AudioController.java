@@ -5,145 +5,113 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.audio.player.dto.AlbumsDTO;
 import org.audio.player.entity.AudioTrack;
-import org.audio.player.jobs.TranscodeJob;
-import org.audio.player.jobs.TranscodeManager;
 import org.audio.player.service.AlbumsService;
 import org.audio.player.service.AudioService;
 import org.audio.player.service.MetadataService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 
 @AllArgsConstructor
 @RestController
 public class AudioController {
 
-    MetadataService metadataService;
-    private TranscodeManager manager;
+    private final MetadataService metadataService;
+    private final AlbumsService albumsService;
+    private final AudioService audioService;
 
-    AlbumsService albumsService;
-    AudioService audioService;
-
+    // ✅ Save all track metadata
     @GetMapping("/saveTrackMetadata")
-    public ResponseEntity<Set<AudioTrack>> saveTrackMetadata(){
-        Set<AudioTrack> audioTracks = metadataService.saveMetadata();
-        return ResponseEntity.ok(audioTracks);
+    public ResponseEntity<Set<AudioTrack>> saveTrackMetadata() {
+        return ResponseEntity.ok(metadataService.saveMetadata());
     }
 
+    // ✅ Get all albums
     @GetMapping("/albums")
-    public ResponseEntity<Set<AlbumsDTO>> getAlbums(){
+    public ResponseEntity<Set<AlbumsDTO>> getAlbums() {
         return ResponseEntity.ok(albumsService.getAlbums());
     }
 
+    // ✅ Get tracks by album name
     @GetMapping("/albums/{albumName}")
-    public ResponseEntity<Set<AudioTrack>> getAlbumTracks(@PathVariable String albumName){
+    public ResponseEntity<Set<AudioTrack>> getAlbumTracks(@PathVariable String albumName) {
         return ResponseEntity.ok(albumsService.getAudioTrackByAlbum(albumName));
     }
 
-    @GetMapping(value = "/playlist/{trackId}", produces = "application/vnd.apple.mpegurl")
-    public void playlist(
+    @GetMapping(value = "/stream/flac/{trackId}", produces = "audio/flac")
+    public void streamFlac(
             @PathVariable Long trackId,
-            @RequestParam(defaultValue = "false") boolean lossless,
-            @RequestParam(defaultValue = "10") int hlsTime,
-            HttpServletRequest req,
-            HttpServletResponse resp
-    ) throws Exception {
-        Path source = locateSource(trackId);
-        TranscodeJob job = manager.getOrCreateJob(trackId, source, lossless, hlsTime);
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
 
-        // wait up to 15s for playlist generation
-        Path playlist = job.awaitPlaylist(15, TimeUnit.SECONDS);
+        // Locate the FLAC file
+        AudioTrack audioTrack = audioService.getAudioTrackById(trackId);
+        Path flacFile = Paths.get(audioTrack.getFilePath());
 
-        // Build absolute base URL dynamically
-        String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
+        if (!Files.exists(flacFile)) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
 
-        // Read the playlist and rewrite segment paths
-        List<String> lines = Files.readAllLines(playlist);
-        StringBuilder modified = new StringBuilder();
+        // Set headers for progressive streaming
+        response.setContentType("audio/flac");
+        response.setHeader("Accept-Ranges", "bytes");
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 
-        for (String line : lines) {
-            if (line.trim().endsWith(".ts")) {
-                // Replace relative segment path with absolute URL
-                modified.append(baseUrl)
-                        .append("/segment/")
-                        .append(trackId)
-                        .append("/")
-                        .append(line.trim())
-                        .append("\n");
-            } else {
-                modified.append(line).append("\n");
+        long fileLength = Files.size(flacFile);
+        String range = request.getHeader("Range");
+        long start = 0, end = fileLength - 1;
+
+        if (range != null && range.startsWith("bytes=")) {
+            String[] parts = range.replace("bytes=", "").split("-");
+            start = Long.parseLong(parts[0]);
+            if (parts.length > 1 && !parts[1].isEmpty()) {
+                end = Long.parseLong(parts[1]);
             }
         }
 
-        resp.setContentType("application/vnd.apple.mpegurl");
-        resp.setCharacterEncoding("UTF-8");
-        resp.getWriter().write(modified.toString());
-        resp.getWriter().flush();
-    }
+        long contentLength = end - start + 1;
+        response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        response.setHeader("Content-Range", "bytes " + start + "-" + end + "/" + fileLength);
+        response.setHeader("Content-Length", String.valueOf(contentLength));
 
-
-    // Request: /audio/segment/{trackId}/{segmentName}
-    @GetMapping(value = "/segment/{trackId}/{segmentName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> segment(
-            @PathVariable Long trackId,
-            @PathVariable String segmentName
-    ) throws Exception {
-        TranscodeJob job = manager.getJob(trackId);
-        if (job == null) return ResponseEntity.notFound().build();
-        Path seg = job.getTempDir().resolve(segmentName);
-        // wait for file to appear up to timeout (e.g., 10s)
-        int waited = 0;
-        while (!Files.exists(seg) && waited < 10000) {
-            Thread.sleep(100);
-            waited += 100;
+        try (var inputStream = Files.newInputStream(flacFile)) {
+            inputStream.skip(start);
+            inputStream.transferTo(response.getOutputStream());
         }
-        if (!Files.exists(seg)) return ResponseEntity.notFound().build();
-        byte[] data = Files.readAllBytes(seg);
-        // set content-type for ts
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("video/MP2T"));
-        return new ResponseEntity<>(data, headers, HttpStatus.OK);
     }
-    
-    @GetMapping(value = "/albums/image/{id}")
-    public ResponseEntity<String> playlist(
-            @PathVariable Long id){
+
+    @GetMapping("/albums/image/{id}")
+    public ResponseEntity<String> getAlbumImage(@PathVariable Long id) {
         return ResponseEntity.ok(albumsService.getAlbumImageById(id));
     }
 
     @GetMapping("/column/{columnName}")
-    public ResponseEntity<List<String>> getTracksByColumn(@PathVariable String columnName){
+    public ResponseEntity<List<String>> getTracksByColumn(@PathVariable String columnName) {
         return ResponseEntity.ok(audioService.getDistinctDataForOneCol(columnName));
     }
 
     @GetMapping("/column/{columnName}/{filterValue}")
-    public ResponseEntity<List<AudioTrack>> getTracksByColumnFilter(@PathVariable String columnName, @PathVariable String filterValue){
+    public ResponseEntity<List<AudioTrack>> getTracksByColumnFilter(
+            @PathVariable String columnName,
+            @PathVariable String filterValue
+    ) {
         return ResponseEntity.ok(audioService.getTracksByColumnFilter(columnName, filterValue));
     }
 
-    // Example implementation — adapt to your storage
     private Path locateSource(Long trackId) {
-        AudioTrack audioTrackById = audioService.getAudioTrackById(trackId);
-        String base = "H:\\audio_songs"; // WINDOWS PATH in your tests
-        String candidate = audioTrackById.getFilePath();
-        Path p = Paths.get(candidate);
-        if (!Files.exists(p)) throw new IllegalArgumentException("source not found: " + p);
-        return p;
+        AudioTrack track = audioService.getAudioTrackById(trackId);
+        Path path = Paths.get(track.getFilePath());
+        if (!Files.exists(path)) {
+            throw new IllegalArgumentException("Source not found: " + path);
+        }
+        return path;
     }
-
-    
 }

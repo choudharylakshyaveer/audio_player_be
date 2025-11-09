@@ -66,4 +66,6 @@ cors:
     - Content-Type
   exposed-headers:
     - Authorization
+    - "Content-Length"
+    - "Content-Range"
   allow-credentials: true
