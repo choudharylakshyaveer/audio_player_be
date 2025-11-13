@@ -26,19 +26,16 @@ public class AudioController {
     private final AlbumsService albumsService;
     private final AudioService audioService;
 
-    // ✅ Save all track metadata
     @GetMapping("/saveTrackMetadata")
     public ResponseEntity<Set<AudioTrack>> saveTrackMetadata() {
         return ResponseEntity.ok(metadataService.saveMetadata());
     }
 
-    // ✅ Get all albums
     @GetMapping("/albums")
     public ResponseEntity<Set<AlbumsDTO>> getAlbums() {
         return ResponseEntity.ok(albumsService.getAlbums());
     }
 
-    // ✅ Get tracks by album name
     @GetMapping("/albums/{albumName}")
     public ResponseEntity<Set<AudioTrack>> getAlbumTracks(@PathVariable String albumName) {
         return ResponseEntity.ok(albumsService.getAudioTrackByAlbum(albumName));
@@ -88,7 +85,7 @@ public class AudioController {
         }
     }
 
-    @GetMapping("/albums/image/{id}")
+    @GetMapping("/image/{id}")
     public ResponseEntity<String> getAlbumImage(@PathVariable Long id) {
         return ResponseEntity.ok(albumsService.getAlbumImageById(id));
     }
@@ -106,12 +103,5 @@ public class AudioController {
         return ResponseEntity.ok(audioService.getTracksByColumnFilter(columnName, filterValue));
     }
 
-    private Path locateSource(Long trackId) {
-        AudioTrack track = audioService.getAudioTrackById(trackId);
-        Path path = Paths.get(track.getFilePath());
-        if (!Files.exists(path)) {
-            throw new IllegalArgumentException("Source not found: " + path);
-        }
-        return path;
-    }
+
 }

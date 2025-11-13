@@ -51,8 +51,8 @@ public class AlbumsService {
                         if (original == null) return base64; // fallback
 
                         // 🔹 Resize and compress
-                        BufferedImage resized = resizeImage(original, 400, 400);
-                        byte[] compressedBytes = compressJpeg(resized, 0.7f); // 70% quality
+                        BufferedImage resized = resizeImage(original, 200, 200);
+                        byte[] compressedBytes = compressJpeg(resized, 1f); // 100% quality
 
                         // 🔹 Encode back to Base64
                         return Base64.getEncoder().encodeToString(compressedBytes);
