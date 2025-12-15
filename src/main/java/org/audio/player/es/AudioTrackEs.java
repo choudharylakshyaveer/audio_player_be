@@ -1,31 +1,26 @@
-package org.audio.player.entity;
+package org.audio.player.es;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.audio.player.annotations.ReplaceText;
-import org.audio.player.annotations.TextReplaceListener;
 import org.audio.player.converter.StringListConverter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.io.Serializable;
 import java.util.List;
 
-@Entity
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@EntityListeners(TextReplaceListener.class)
-@Table(name = "audio_track", uniqueConstraints = @UniqueConstraint(columnNames = {"album", "title", "album_movie_show_title"}))
-public class AudioTrack implements Serializable {
+@AllArgsConstructor
+@Document(indexName = "audio-tracks")
+public class AudioTrackEs {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
     private Long id;
-
     private String audioChannelType;
     private String audioSampleRate;
     private Integer channels;
@@ -80,10 +75,10 @@ public class AudioTrack implements Serializable {
     private String filePath;
 
     @ReplaceText()
-    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
     private String album;
+
     @ReplaceText()
-    @EqualsAndHashCode.Include
     private String title;
 
 

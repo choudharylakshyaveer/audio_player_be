@@ -32,9 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class Mp3Metadata {
@@ -86,8 +84,8 @@ public class Mp3Metadata {
 
     @Lazy
     @Bean
-    public List<AudioTrack> getMp3Tracks(File[] files) {
-        List<AudioTrack> audioTracks = new ArrayList<>();
+    public Set<AudioTrack> getMp3Tracks(File[] files) {
+        Set<AudioTrack> audioTracks = new HashSet<>();
 
         Arrays.stream(files).forEach(file -> {
             try {

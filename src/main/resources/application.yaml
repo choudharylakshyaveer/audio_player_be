@@ -26,6 +26,16 @@ spring:
     ansi:
       enabled: ALWAYS
       console-available: true
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: localhost:9200
+  elasticsearch:
+    uris: http://localhost:9200/
+    username: elastic
+    password: Chaudhary@1994
+  main:
+    allow-bean-definition-overriding: true
 
 
     properties:
@@ -39,14 +49,25 @@ logging:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
   level:
     root: INFO
+    org:
+      apache: INFO
+      springframework: INFO
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
     spring:
       security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
+  file:
+    name: H:/study/elasticsearch/logs/app.log
+
 security:
   jwt:
     secret: superSecretKey12345678901234567890
 
 metadata:
-  folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track
+  folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track,
   replacements:
     from: [ "(DJJOhAL.Com)", "(RiskyjaTT.CoM)" ]
     to: ""
@@ -69,3 +90,5 @@ cors:
     - "Content-Length"
     - "Content-Range"
   allow-credentials: true
+
+## https://medium.com/cloud-native-daily/elk-spring-boot-a-guide-to-local-configuration-b6d9fa7790f6  Elastic search tutorial
