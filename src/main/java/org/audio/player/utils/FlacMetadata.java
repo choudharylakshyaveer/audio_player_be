@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,8 +28,8 @@ public class FlacMetadata {
 
     @Lazy
     @Bean
-    public List<AudioTrack> getFlacTracks(File[] files) {
-        List<AudioTrack> audioTracks = new ArrayList<>();
+    public Set<AudioTrack> getFlacTracks(File[] files) {
+        Set<AudioTrack> audioTracks = new HashSet<>();
         Arrays.stream(files).forEach(
                 file -> {
                     AudioTrack.AudioTrackBuilder audioTrackBuilder = AudioTrack.builder();
@@ -84,10 +82,10 @@ public class FlacMetadata {
                         String format = audioFile.getAudioHeader().getFormat();
                         audioTrackBuilder.format(format);
                     }
-                    if(audioFile.getAudioHeader().getBitRate() != null){
-                    String bitRateKbps = audioFile.getAudioHeader().getBitRate();
-                    audioTrackBuilder.bitRate(bitRateKbps);
-}
+                    if(audioFile.getAudioHeader().getBitRate() != null) {
+                        String bitRateKbps = audioFile.getAudioHeader().getBitRate();
+                        audioTrackBuilder.bitRate(bitRateKbps);
+                    }
                     Boolean lossless = audioFile.getAudioHeader().isLossless();
                     audioTrackBuilder.lossless(lossless);
 //                    audioTrackBuilder.audioTrack(audioTrackIdBuilder.build());
