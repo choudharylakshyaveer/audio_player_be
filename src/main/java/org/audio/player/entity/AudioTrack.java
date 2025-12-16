@@ -46,6 +46,7 @@ public class AudioTrack implements Serializable {
     @Column(columnDefinition = "LONGTEXT")
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private String attached_picture;
 
     @ReplaceText()

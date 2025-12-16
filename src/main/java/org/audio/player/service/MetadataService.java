@@ -2,8 +2,6 @@ package org.audio.player.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.audio.player.entity.AudioTrack;
-import org.audio.player.es.AudioTrackEs;
-import org.audio.player.es.AudioTrackEsRepository;
 import org.audio.player.repository.AudioTrackRepo;
 import org.audio.player.utils.FlacMetadata;
 import org.audio.player.utils.Mp3Metadata;
@@ -11,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.HashSet;
@@ -37,7 +33,7 @@ public class MetadataService {
     private List<String> folderPaths;
 
     @Autowired
-    AudioTrackEsRepository audioTrackEsRepository;
+    private AudioTrackLuceneIndexService luceneService;
 
 //    @Transactional
     public Set<AudioTrack> saveMetadata() {
@@ -74,52 +70,8 @@ public class MetadataService {
                 if (/*!audioTrackRepo.existsByFileName(audioTrack.getFileName()) &&*/ !audioTrackRepo.existsByAlbumAndAlbum_movie_show_titleAndTitle(audioTrack.getAlbum(), audioTrack.getAlbum_movie_show_title(), audioTrack.getTitle())) {
 
                     AudioTrack saved = audioTrackRepo.save(audioTrack);
+                    luceneService.index(saved);
                     savedTracks.add(saved);
-
-                    // Save to Elasticsearch as well
-                    AudioTrackEs esDoc = AudioTrackEs.builder()
-                            .id(saved.getId())
-
-                            // audio / technical
-                            .audioChannelType(saved.getAudioChannelType())
-                            .audioSampleRate(saved.getAudioSampleRate())
-                            .channels(saved.getChannels())
-                            .samplerate(saved.getSamplerate())
-                            .bitRate(saved.getBitRate())
-                            .encodingType(saved.getEncodingType())
-                            .format(saved.getFormat())
-                            .lossless(saved.isLossless())
-
-                            // people / tags
-                            .authors(saved.getAuthors())
-                            .artists(saved.getArtists())
-                            .additionalArtist(saved.getAdditionalArtist())
-                            .composer(saved.getComposer())
-
-                            // text metadata
-                            .album(saved.getAlbum())
-                            .title(saved.getTitle())
-                            .album_movie_show_title(saved.getAlbum_movie_show_title())
-                            .comments(saved.getComments())
-                            .year(saved.getYear())
-                            .genre(saved.getGenre())
-
-                            // file info
-                            .fileName(saved.getFileName())
-                            .filePath(saved.getFilePath())
-                            .fileExtension(saved.getFileExtension())
-                            .content_type(saved.getContent_type())
-
-                            // vendor / encoder
-                            .vendor(saved.getVendor())
-                            .albumArtist(saved.getAlbumArtist())
-                            .encoder(saved.getEncoder())
-
-                            // binary / ignored (kept for completeness)
-//                            .attached_picture(saved.getAttached_picture())
-                            .build();
-
-                    audioTrackEsRepository.save(esDoc);
                 } else {
                     duplicateTracks.add(audioTrack);
                 }
