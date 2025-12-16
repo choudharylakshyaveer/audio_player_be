@@ -3,11 +3,13 @@ package org.audio.player.service;
 import org.audio.player.dto.AlbumsDTO;
 import org.audio.player.dto.SearchResultDTO;
 import org.audio.player.entity.AudioTrack;
-import org.audio.player.es.AudioTrackEsRepository;
 import org.audio.player.repository.AudioTrackRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -15,7 +17,9 @@ import java.util.stream.Collectors;
 @Service
 public class AudioSearchResultService {
 
-  @Autowired AudioTrackEsRepository audioTrackEsRepository;
+  //  @Autowired AudioTrackEsRepository audioTrackEsRepository;
+
+  @Autowired AudioTrackLuceneSearchService audioTrackLuceneSearchService;
 
   @Autowired AudioTrackRepo audioTrackRepo;
 
@@ -23,12 +27,12 @@ public class AudioSearchResultService {
     try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
       Future<Set<AudioTrack>> searchedTracksByTitleFuture =
           executor.submit(() -> getSearchedTracksByTitle(searchedValue));
-      Future<Set<AudioTrack>> searchedTracksByArtistFuture =
-          executor.submit(() -> getSearchedTracksByArtist(searchedValue));
+      Future<Set<String>> searchedTracksByArtistFuture =
+          executor.submit(() -> getSearchedArtists(searchedValue));
       Future<Set<AlbumsDTO>> searchedTracksByAlbumFuture =
           executor.submit(() -> getSearchedAlbums(searchedValue));
       Set<AudioTrack> searchedTracksByTitle = searchedTracksByTitleFuture.get();
-      Set<AudioTrack> searchedTracksByArtist = searchedTracksByArtistFuture.get();
+      Set<String> searchedTracksByArtist = searchedTracksByArtistFuture.get();
       Set<AlbumsDTO> searchedTracksByAlbum = searchedTracksByAlbumFuture.get();
       return SearchResultDTO.builder()
           .audioTracks(searchedTracksByTitle)
@@ -44,36 +48,34 @@ public class AudioSearchResultService {
 
   // albums -> only albums name
   private Set<AlbumsDTO> getSearchedAlbums(String searchedValue) {
-    // should return album name and image
-    return audioTrackEsRepository.searchAlbums(searchedValue).parallelStream()
-        .map(
-            audioTrackEs -> {
-              AudioTrack audioTrack = audioTrackRepo.findById(audioTrackEs.getId()).get();
-              return AlbumsDTO.builder()
-                  .album(audioTrack.getAlbum())
-                  .attachedPicture(audioTrack.getAttached_picture())
-                  .build();
-            })
-        .collect(Collectors.toSet());
+
+    List<Long> ids = audioTrackLuceneSearchService.searchInField("album", searchedValue, 100);
+    ;
+
+    return audioTrackRepo.findDistinctAlbumsByTrackIds(ids);
   }
 
   // Tracks from column album_movie_show_title
   private Set<AudioTrack> getSearchedTracksByTitle(String searchedValue) {
-    return audioTrackEsRepository.searchByTitle(searchedValue).parallelStream()
-        .map(
-            audioTrackEs -> {
-              return audioTrackRepo.findById(audioTrackEs.getId()).get();
-            })
+    return audioTrackRepo
+        .findAllById(
+            audioTrackLuceneSearchService.searchInField(
+                "album_movie_show_title", searchedValue, 100))
+        .stream()
         .collect(Collectors.toSet());
   }
 
   // Artists
-  private Set<AudioTrack> getSearchedTracksByArtist(String searchedValue) {
-    return audioTrackEsRepository.searchByArtist(searchedValue).parallelStream()
-        .map(
-            audioTrackEs -> {
-              return audioTrackRepo.findById(audioTrackEs.getId()).get();
-            })
-        .collect(Collectors.toSet());
+  private Set<String> getSearchedArtists(String searchedValue) {
+
+    return audioTrackRepo
+        .findAllById(audioTrackLuceneSearchService.searchInField("artists", searchedValue, 100))
+        .stream()
+        .map(AudioTrack::getArtists) // List<String>
+        .filter(Objects::nonNull)
+        .flatMap(List::stream) // Stream<String>
+        .map(String::trim)
+        .filter(s -> !s.isBlank())
+        .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 }

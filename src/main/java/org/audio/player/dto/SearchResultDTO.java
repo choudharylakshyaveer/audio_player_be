@@ -13,5 +13,5 @@ public class SearchResultDTO {
 
   Set<AlbumsDTO> albums;
   Set<AudioTrack> audioTracks;
-  Set<AudioTrack> artists;
+  Set<String> artists;
 }

@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Service
 public class AlbumsService {
 
-    AudioTrackRepo audioTrackRepo;
+    private final AudioTrackRepo audioTrackRepo;
 
     public Set<AlbumsDTO> getAlbums(){
         return audioTrackRepo.getAlbums().stream().limit(20L).collect(Collectors.toSet());

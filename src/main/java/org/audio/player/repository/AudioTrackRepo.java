@@ -32,4 +32,12 @@ public interface AudioTrackRepo
       @Param("album") String album,
       @Param("album_movie_show_title") String album_movie_show_title,
       @Param("title") String title);
+
+  @Query(
+"""
+   select distinct a.album as album, a.attached_picture as attachedPicture
+   from AudioTrack a
+   where a.id in :ids
+""")
+  Set<AlbumsDTO> findDistinctAlbumsByTrackIds(@Param("ids") List<Long> ids);
 }
