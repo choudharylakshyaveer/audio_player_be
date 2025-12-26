@@ -1,5 +1,6 @@
 package org.audio.player.utils;
 
+import io.vavr.Tuple;
 import org.audio.player.entity.AudioTrack;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -28,72 +29,85 @@ public class FlacMetadata {
 
     @Lazy
     @Bean
-    public Set<AudioTrack> getFlacTracks(File[] files) {
+    public Tuple getFlacTracks(File[] files, Set<File> failedFiles) {
         Set<AudioTrack> audioTracks = new HashSet<>();
         Arrays.stream(files).forEach(
                 file -> {
-                    AudioTrack.AudioTrackBuilder audioTrackBuilder = AudioTrack.builder();
-                    audioTrackBuilder.fileName(file.getName());
-//                    AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
-                    AudioFile audioFile = getAudioFile(file);
-                    String vendor = audioFile.getTag().getFields("VENDOR").getFirst().toString();
-                    audioTrackBuilder.vendor(vendor);
-                    String title = audioFile.getTag().getFields("TITLE").getFirst().toString();
-                    audioTrackBuilder.album_movie_show_title(title);
-                    String artist = audioFile.getTag().getFields("ARTIST").getFirst().toString();
-                    audioTrackBuilder.artists(List.of(artist));
 
-                    String filePath = file.getAbsolutePath();
-                    audioTrackBuilder.filePath(filePath);
-
-                    String albumArtist = getFieldValue(audioFile, "ALBUMARTIST");
-                    audioTrackBuilder.albumArtist(albumArtist);
-
-                    String album = getFieldValue(audioFile, "ALBUM");
-                    audioTrackBuilder.album(album);
-
-                    String genre = getFieldValue(audioFile, "GENRE");
-                    audioTrackBuilder.genre(genre);
-
-                    String encoder = getFieldValue(audioFile, "ENCODER");
-                    audioTrackBuilder.encoder(encoder);
-
-
-                    String date = getFieldValue(audioFile, "DATE");
-                    if(date!=null){
-                        String year = String.valueOf(LocalDate.parse(audioFile.getTag().getFields("DATE").getFirst().toString()).getYear());
-                        audioTrackBuilder.year(year);
-                    }
                     try {
-                        audioTrackBuilder.attached_picture(albumArtExtractor.extractAlbumArt(file));
-                    } catch (Exception e) {
-                        logger.log(Level.SEVERE, e.getMessage());
-                    }
-                    if(audioFile.getAudioHeader().getChannels() != null){
-                        int channels = Integer.parseInt(audioFile.getAudioHeader().getChannels());
-                        audioTrackBuilder.channels(channels);
-                    }
+                        AudioTrack.AudioTrackBuilder audioTrackBuilder = AudioTrack.builder();
+                        audioTrackBuilder.fileName(file.getName());
+//                    AudioTrackId.AudioTrackIdBuilder audioTrackIdBuilder = AudioTrackId.builder();
+                        AudioFile audioFile = getAudioFile(file);
+                        String vendor = audioFile.getTag().getFields("VENDOR").getFirst().toString();
+                        audioTrackBuilder.vendor(vendor);
+                        String title = audioFile.getTag().getFields("TITLE").getFirst().toString();
+                        audioTrackBuilder.album_movie_show_title(title);
+                        String artist = audioFile.getTag().getFields("ARTIST").getFirst().toString();
+                        audioTrackBuilder.artists(List.of(artist));
 
-                    if(audioFile.getAudioHeader().getEncodingType() != null) {
-                        String encodingType = audioFile.getAudioHeader().getEncodingType();
-                        audioTrackBuilder.encodingType(encodingType);
-                    }
-                    if(audioFile.getAudioHeader().getFormat() != null) {
-                        String format = audioFile.getAudioHeader().getFormat();
-                        audioTrackBuilder.format(format);
-                    }
-                    if(audioFile.getAudioHeader().getBitRate() != null) {
-                        String bitRateKbps = audioFile.getAudioHeader().getBitRate();
-                        audioTrackBuilder.bitRate(bitRateKbps);
-                    }
-                    Boolean lossless = audioFile.getAudioHeader().isLossless();
-                    audioTrackBuilder.lossless(lossless);
+                        String filePath = file.getAbsolutePath();
+                        audioTrackBuilder.filePath(filePath);
+
+                        String albumArtist = getFieldValue(audioFile, "ALBUMARTIST");
+                        audioTrackBuilder.albumArtist(albumArtist);
+
+                        String album = getFieldValue(audioFile, "ALBUM");
+                        audioTrackBuilder.album(album);
+
+                        String genre = getFieldValue(audioFile, "GENRE");
+                        audioTrackBuilder.genre(genre);
+
+                        String encoder = getFieldValue(audioFile, "ENCODER");
+                        audioTrackBuilder.encoder(encoder);
+
+
+                        String date = getFieldValue(audioFile, "DATE");
+                        if(date!=null){
+                            try {
+                                String year = String.valueOf(LocalDate.parse(audioFile.getTag().getFields("DATE").getFirst().toString()).getYear());
+                                audioTrackBuilder.year(year);
+                            } catch (Exception e) {
+                                logger.log(Level.SEVERE, e.getMessage());
+                            }
+                        }
+                        try {
+                            audioTrackBuilder.attached_picture(albumArtExtractor.extractAlbumArt(file));
+                        } catch (Exception e) {
+                            logger.log(Level.SEVERE, e.getMessage());
+                        }
+                        if(audioFile.getAudioHeader().getChannels() != null){
+                            int channels = Integer.parseInt(audioFile.getAudioHeader().getChannels());
+                            audioTrackBuilder.channels(channels);
+                        }
+
+                        if(audioFile.getAudioHeader().getEncodingType() != null) {
+                            String encodingType = audioFile.getAudioHeader().getEncodingType();
+                            audioTrackBuilder.encodingType(encodingType);
+                        }
+                        if(audioFile.getAudioHeader().getFormat() != null) {
+                            String format = audioFile.getAudioHeader().getFormat();
+                            audioTrackBuilder.format(format);
+                        }
+                        if(audioFile.getAudioHeader().getBitRate() != null) {
+                            String bitRateKbps = audioFile.getAudioHeader().getBitRate();
+                            audioTrackBuilder.bitRate(bitRateKbps);
+                        }
+                        Boolean lossless = audioFile.getAudioHeader().isLossless();
+                        audioTrackBuilder.lossless(lossless);
 //                    audioTrackBuilder.audioTrack(audioTrackIdBuilder.build());
 
-                    audioTracks.add(audioTrackBuilder.build());
+                        audioTracks.add(audioTrackBuilder.build());
+                    } catch (NumberFormatException e) {
+                        failedFiles.add(file);
+                    }
+                    catch (RuntimeException e) {
+                        failedFiles.add(file);
+                    }
 
                 });
-        return audioTracks;
+        return Tuple.of(audioTracks, failedFiles);
+//         audioTracks;
         
     }
 

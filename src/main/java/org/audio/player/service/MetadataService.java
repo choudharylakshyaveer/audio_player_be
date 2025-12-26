@@ -1,6 +1,8 @@
 package org.audio.player.service;
 
+import io.vavr.Tuple;
 import lombok.extern.slf4j.Slf4j;
+import org.audio.player.dto.MetadataScanResult;
 import org.audio.player.entity.AudioTrack;
 import org.audio.player.repository.AudioTrackRepo;
 import org.audio.player.utils.FlacMetadata;
@@ -11,9 +13,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,79 +23,162 @@ import java.util.stream.Collectors;
 public class MetadataService {
 
     @Autowired
-    Mp3Metadata mp3Metadata;
+    private Mp3Metadata mp3Metadata;
 
     @Autowired
-    FlacMetadata flacMetadata;
+    private FlacMetadata flacMetadata;
 
     @Autowired
-    AudioTrackRepo audioTrackRepo;
-
-    @Value("${metadata.folders}")
-    private List<String> folderPaths;
+    private AudioTrackRepo audioTrackRepo;
 
     @Autowired
     private AudioTrackLuceneIndexService luceneService;
 
-//    @Transactional
-    public Set<AudioTrack> saveMetadata() {
+    @Value("${metadata.folders}")
+    private List<String> folderPaths;
+
+    public MetadataScanResult saveMetadata() {
 
         Set<AudioTrack> audioTracks = new HashSet<>();
-        Set<AudioTrack> savedTracks = new HashSet<>();
-
-        for (String folderPath : folderPaths) {
-            File folder = new File(folderPath);
-            File[] mp3Files = folder.listFiles((dir, name) -> name.matches(".*\\.(mp3)$"));
-            File[] flacFiles = folder.listFiles((dir, name) -> name.matches(".*\\.(flac)$"));
-
-            Set<AudioTrack> flacFilesMetadata = flacMetadata.getFlacTracks(flacFiles);
-            Set<AudioTrack> mp3FilesMetadata = mp3Metadata.getMp3Tracks(mp3Files);
-
-            audioTracks.addAll(
-                    flacFilesMetadata.stream()
-                            .filter(audioTrack -> audioTrack.getAlbum() != null && !audioTrack.getAlbum().isEmpty())
-                            .collect(Collectors.toSet())
-            );
-
-            audioTracks.addAll(
-                    mp3FilesMetadata.stream()
-                            .filter(audioTrack -> audioTrack.getTitle() != null && !audioTrack.getTitle().isEmpty()
-                                    && audioTrack.getAlbum() != null && !audioTrack.getAlbum().isEmpty())
-                            .collect(Collectors.toSet())
-            );
-        }
-
         Set<AudioTrack> duplicateTracks = new HashSet<>();
 
-        for (AudioTrack audioTrack : audioTracks) {
-            try {
-                if (/*!audioTrackRepo.existsByFileName(audioTrack.getFileName()) &&*/ !audioTrackRepo.existsByAlbumAndAlbum_movie_show_titleAndTitle(audioTrack.getAlbum(), audioTrack.getAlbum_movie_show_title(), audioTrack.getTitle())) {
+        Set<File> uploadedFiles = new HashSet<>();
+        Set<File> notUploadedFiles = new HashSet<>();
+        Set<File> failedFiles = new HashSet<>();
 
-                    AudioTrack saved = audioTrackRepo.save(audioTrack);
-                    luceneService.index(saved);
-                    savedTracks.add(saved);
-                } else {
-                    duplicateTracks.add(audioTrack);
-                }
+        for (String folderPath : folderPaths) {
+
+            File root = normalizeRoot(folderPath);
+
+            if (!root.exists() || !root.isDirectory()) {
+                log.warn("Skipping invalid folder: {}", folderPath);
+                continue;
             }
-            catch (DataIntegrityViolationException e){
-                log.error("DataIntegrityViolationException saving track {}", audioTrack.getFileName(), e);
+
+            Set<File> mp3Files = new HashSet<>();
+            Set<File> flacFiles = new HashSet<>();
+
+            try {
+                collectAudioFiles(root, mp3Files, flacFiles);
+            } catch (Exception e) {
+                failedFiles.add(root);
+                log.error("Failed scanning folder {}", root, e);
+                continue;
             }
-            catch (Exception e) {
-                log.error("Error saving track {}", audioTrack.getFileName(), e);
+
+            // FLAC
+            Tuple flacTracksTuple = flacMetadata.getFlacTracks(flacFiles.toArray(File[]::new), failedFiles);
+            try {
+                audioTracks.addAll((Collection<? extends AudioTrack>) flacTracksTuple.toSeq().get(0));
+            } catch (Exception e) {
+                failedFiles.addAll((Collection<? extends File>) flacTracksTuple.toSeq().get(1));
+                log.error("FLAC metadata extraction failed", e);
+            }
+
+            // MP3
+            try {
+                audioTracks.addAll(mp3Metadata.getMp3Tracks(mp3Files.toArray(File[]::new)));
+            } catch (Exception e) {
+                failedFiles.addAll(mp3Files);
+                log.error("MP3 metadata extraction failed", e);
             }
         }
 
+        // ---------- SAVE + INDEX ----------
+        for (AudioTrack audioTrack : audioTracks) {
 
-        log.warn("Duplicate tracks ({}):\n{}",
+            File file = new File(audioTrack.getFilePath());
+
+            try {
+                if (!audioTrackRepo.existsByAlbumAndAlbum_movie_show_titleAndTitle(
+                        audioTrack.getAlbum(), audioTrack.getAlbum_movie_show_title(), audioTrack.getTitle())) {
+
+                    AudioTrack saved = audioTrackRepo.save(audioTrack);
+
+                    try {
+                        luceneService.index(saved);
+                    } catch (Exception e) {
+                        failedFiles.add(file);
+                        log.error("Lucene indexing failed for {}", file, e);
+                        continue;
+                    }
+
+                    uploadedFiles.add(file);
+
+                } else {
+                    duplicateTracks.add(audioTrack);
+                    notUploadedFiles.add(file);
+                }
+            } catch (DataIntegrityViolationException e) {
+
+                if (isDuplicateConstraint(e)) {
+                    log.debug("Duplicate track ignored: {}", file.getAbsolutePath());
+                    continue;
+                }
+
+                failedFiles.add(file);
+                log.error("DB constraint failure for {}", file, e);
+            } catch (Exception e) {
+                failedFiles.add(file);
+                log.error("Unexpected error for {}", file, e);
+            }
+        }
+
+        log.warn(
+                "Duplicate tracks ({}): {}",
                 duplicateTracks.size(),
-                duplicateTracks.stream()
-                        .map(AudioTrack::getFilePath)
-                        .collect(Collectors.toSet())
+                duplicateTracks.stream().map(AudioTrack::getFilePath).collect(Collectors.toSet())
         );
 
-        return savedTracks;
+        return new MetadataScanResult(uploadedFiles, notUploadedFiles, failedFiles);
     }
 
+    private boolean isDuplicateConstraint(DataIntegrityViolationException e) {
+        Throwable cause = e.getMostSpecificCause();
+        if (cause == null) return false;
+        String msg = cause.getMessage();
+        if (msg == null) return false;
+        return msg.contains("Duplicate entry") || msg.contains("UK") || msg.contains("unique constraint");
+    }
 
+    /** Recursive file collector using java.io.File */
+    private void collectAudioFiles(File dir, Set<File> mp3Files, Set<File> flacFiles) {
+        if (!dir.canRead()) return;
+
+        String dirName = dir.getName();
+        if ("System Volume Information".equalsIgnoreCase(dirName) || "$RECYCLE.BIN".equalsIgnoreCase(dirName)) {
+            return;
+        }
+
+        File[] files = dir.listFiles();
+        if (files == null) return;
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                collectAudioFiles(file, mp3Files, flacFiles);
+            } else {
+                String name = file.getName().toLowerCase();
+                if (name.endsWith(".mp3")) {
+                    mp3Files.add(file);
+                } else if (name.endsWith(".flac")) {
+                    flacFiles.add(file);
+                }
+            }
+        }
+    }
+
+    /** Normalizes root paths for both Windows and Docker containers */
+    private File normalizeRoot(String path) {
+        // Docker container mapped folders
+        if (path.startsWith("/audio-data/")) {
+            return new File(path);
+        }
+
+        // Windows drive letters: H: → H:\
+        if (path.matches("^[A-Za-z]:$")) {
+            return new File(path + "\\");
+        }
+
+        return new File(path);
+    }
 }

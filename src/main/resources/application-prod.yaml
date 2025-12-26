@@ -1,14 +1,19 @@
+server:
+  port: ${AUDIO_PLAYER_BE_PORT:8082}
+  servlet:
+    session:
+      timeout: ${SESSION_TIMEOUT:120s}
+
 spring:
   application:
     name: ${SPRING_APP_NAME:Audio player BE}
   datasource:
-    url: jdbc:mysql://localhost:3306/audio_player?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
-    username: root
-    password: mysql
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:audio_player}?${DB_PARAMS:useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:mysql}
   sql:
     init:
-      mode: ALWAYS    #change it accordingly
-#      schema-locations: classpath:/sql/schema.sql
+      mode: ${SPRING_SQL_INIT_MODE:ALWAYS}
       data-locations: classpath:/sql/data.sql
   jpa:
     hibernate:
@@ -18,40 +23,41 @@ spring:
     ansi:
       enabled: ALWAYS
       console-available: true
-
-
+  main:
+    allow-bean-definition-overriding: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: true
-
 
 logging:
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
   level:
     root: INFO
+    org:
+      apache: INFO
+      springframework: INFO
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE
     spring:
       security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
-server:
-  port: 8082
-  servlet:
-    session:
-      timeout: ${SESSION_TIMEOUT:120s}
+
 security:
   jwt:
-    secret: superSecretKey12345678901234567890
+    secret: ${SECURITY_JWT_SECRET:superSecretKey12345678901234567890}
 
 metadata:
-  folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track
+  folders: ${SCANNING_FOLDERS:H:/audio_songs,C:/Users/choud/Downloads/Top 50 Single Track}
   replacements:
-    from: [ "(DJJOhAL.Com)", "(RiskyjaTT.CoM)" ]
-    to: ""
+    from: ${METADATA_REPLACEMENTS_FROM:(DJJOhAL.Com),(RiskyjaTT.CoM)}
+    to: ${METADATA_REPLACEMENTS_TO:}
 
 cors:
-  allowed-origins:
-    - "http://100.125.57.120:3000"
-    - "http://localhost:3000"
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://192.168.1.5:3000,http://localhost:3000}
   allowed-methods:
     - GET
     - POST
@@ -63,4 +69,6 @@ cors:
     - Content-Type
   exposed-headers:
     - Authorization
+    - "Content-Length"
+    - "Content-Range"
   allow-credentials: true
