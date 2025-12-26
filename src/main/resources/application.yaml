@@ -5,8 +5,8 @@ server:
       timeout: ${SESSION_TIMEOUT:120s}
 
 spring:
-#  profiles:
-#    active: local
+  profiles:
+    active: prod
   application:
     name: ${SPRING_APP_NAME:Audio player BE}
   datasource:
@@ -26,10 +26,6 @@ spring:
     ansi:
       enabled: ALWAYS
       console-available: true
-  data:
-    elasticsearch:
-      cluster-name: elasticsearch
-      cluster-nodes: localhost:9200
   main:
     allow-bean-definition-overriding: true
 
@@ -63,7 +59,7 @@ security:
     secret: superSecretKey12345678901234567890
 
 metadata:
-  folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track,
+  folders: "H:"
   replacements:
     from: [ "(DJJOhAL.Com)", "(RiskyjaTT.CoM)" ]
     to: ""
@@ -87,4 +83,3 @@ cors:
     - "Content-Range"
   allow-credentials: true
 
-## https://medium.com/cloud-native-daily/elk-spring-boot-a-guide-to-local-configuration-b6d9fa7790f6  Elastic search tutorial

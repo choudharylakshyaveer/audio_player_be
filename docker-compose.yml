@@ -1,31 +1,61 @@
 version: "3.8"
 
 services:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
-    container_name: elasticsearch
+
+  mysql:
+    image: mysql:8.0
+    container_name: audio_player_mysql
+    restart: always
     environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=changeme
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
-      - "9200:9200"
+      - "${MYSQL_PORT}:3306"
     volumes:
-      - es_data:/usr/share/elasticsearch/data
+      - mysql_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
 
   audio_player_be_app:
     build: .
     container_name: audio_player_be_app
-    depends_on:
-      - elasticsearch
-    environment:
-      - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
-      - SPRING_ELASTICSEARCH_USERNAME=elastic
-      - SPRING_ELASTICSEARCH_PASSWORD=changeme
-    ports:
-      - "8082:8082"
     restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${AUDIO_PLAYER_BE_PORT}:8082"
+
+    environment:
+      AUDIO_PLAYER_BE_PORT: ${AUDIO_PLAYER_BE_PORT}
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT}
+      SPRING_APP_NAME: ${SPRING_APP_NAME}
+
+      DB_HOST: mysql
+      DB_PORT: ${MYSQL_PORT}
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_PARAMS: useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+
+      MYSQL_USERNAME: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+      SPRING_SECURITY_LOGGING_LEVEL: ${SPRING_SECURITY_LOGGING_LEVEL}
+      SECURITY_JWT_SECRET: ${SECURITY_JWT_SECRET}
+
+      SCANNING_FOLDERS: /audio-data/songs,/audio-data/top50
+      METADATA_REPLACEMENTS_FROM: ${METADATA_REPLACEMENTS_FROM}
+      METADATA_REPLACEMENTS_TO: ${METADATA_REPLACEMENTS_TO}
+
+      CORS_ALLOWED_ORIGINS: http://${HOST_MACHINE_IP}:3000
+
+    volumes:
+      # Mount Windows host folders into Docker container
+      - H:/audio_songs:/audio-data/songs:ro
+      - C:/Users/choud/Downloads/Top 50 Single Track:/audio-data/top50:ro
 
 volumes:
-  es_data:
+  mysql_data:
+    driver: local
