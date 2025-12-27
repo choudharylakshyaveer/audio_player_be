@@ -105,6 +105,10 @@ public class Mp3Metadata {
                 String filePath = file.getAbsolutePath();
                 trackBuilder.filePath(filePath);
 
+                int trackLength = audioFile.getAudioHeader().getTrackLength();
+                trackBuilder.trackLength(trackLength);
+
+
                 try {
                     String title = normalizeText(tag.getFirst(FieldKey.TITLE));
                     trackBuilder.title(title);

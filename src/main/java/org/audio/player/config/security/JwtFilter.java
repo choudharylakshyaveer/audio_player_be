@@ -15,13 +15,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.util.Set;
 
 @Profile("prod")
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final SecretKey secretKey;
-
+    private static final Set<String> PUBLIC_PATH_PREFIXES = Set.of(
+            "/stream/flac/",
+            "/saveTrackMetadata",
+            "/actuator/",
+            "/public/"
+    );
     public JwtFilter(@Value("${security.jwt.secret}") String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
@@ -63,4 +69,9 @@ public class JwtFilter extends OncePerRequestFilter {
             httpResponse.getWriter().write("Invalid token: " + e.getMessage());
         }
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return PUBLIC_PATH_PREFIXES.stream().anyMatch(path::startsWith);    }
 }
