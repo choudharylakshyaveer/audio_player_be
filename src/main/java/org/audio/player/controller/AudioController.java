@@ -6,16 +6,18 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import lombok.AllArgsConstructor;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.audio.player.dto.MetadataScanResult;
 import org.audio.player.entity.AudioTrack;
 import org.audio.player.service.*;
+import org.audio.player.service.StreamTokenService;
 import org.audio.player.utils.FileStreamingUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @Slf4j
 @RequestMapping
@@ -25,6 +27,7 @@ public class AudioController {
   private final AlbumsService albumsService;
   private final AudioService audioService;
   private final AudioSearchService audioSearchService;
+    private final StreamTokenService streamTokenService;
 
   @GetMapping("/saveTrackMetadata")
   public ResponseEntity<MetadataScanResult> saveTrackMetadata() throws IOException {
@@ -45,14 +48,34 @@ public class AudioController {
 
   @GetMapping(value = "/stream/flac/{trackId}", produces = "audio/flac")
   public void streamFlac(
-      @PathVariable Long trackId, HttpServletRequest request, HttpServletResponse response)
+      @PathVariable Long trackId,
+      @RequestParam String token,
+      HttpServletRequest request,
+      HttpServletResponse response)
       throws IOException {
 
-    log.info("Executing /stream/flac/{}", trackId);
-    AudioTrack audioTrack = audioService.getAudioTrackById(trackId);
-    Path flacPath = Paths.get(audioTrack.getFilePath());
+    if (streamTokenService.isValid(token, trackId)) {
 
-    FileStreamingUtil.streamFile(flacPath, "audio/flac", request, response);
+      AudioTrack audioTrack = audioService.getAudioTrackById(trackId);
+      Path flacPath = Paths.get(audioTrack.getFilePath());
+
+      FileStreamingUtil.streamFile(flacPath, "audio/flac", request, response);
+    } else {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setHeader(
+          "WWW-Authenticate",
+          "Bearer error=\"invalid_token\", error_description=\"Stream token expired\"");
+      response
+          .getWriter()
+          .write(
+              """
+        {
+          "error": "STREAM_TOKEN_EXPIRED",
+          "message": "Stream token has expired"
+        }
+        """);
+      return;
+    }
   }
 
   @GetMapping("/image/{id}")

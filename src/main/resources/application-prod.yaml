@@ -57,7 +57,7 @@ metadata:
     to: ${METADATA_REPLACEMENTS_TO:}
 
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://192.168.1.5:3000,http://localhost:3000}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://192.168.1.5:3000,http://localhost:3000, http://100.125.57.120:3000}
   allowed-methods:
     - GET
     - POST

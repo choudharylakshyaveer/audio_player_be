@@ -89,4 +89,5 @@ public class AudioTrack implements Serializable {
 
 
     private String fileExtension;
+    private int trackLength;
 }

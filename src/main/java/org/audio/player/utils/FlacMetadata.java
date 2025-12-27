@@ -45,7 +45,9 @@ public class FlacMetadata {
                         audioTrackBuilder.album_movie_show_title(title);
                         String artist = audioFile.getTag().getFields("ARTIST").getFirst().toString();
                         audioTrackBuilder.artists(List.of(artist));
-
+                        int trackLength = audioFile.getAudioHeader().getTrackLength();
+                        audioTrackBuilder.trackLength(trackLength);
+                        
                         String filePath = file.getAbsolutePath();
                         audioTrackBuilder.filePath(filePath);
 

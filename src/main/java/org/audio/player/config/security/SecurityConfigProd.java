@@ -29,6 +29,7 @@ public class SecurityConfigProd {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(form -> form.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/stream/flac/**").permitAll()
                         .anyRequest().permitAll()
                 )
 //                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
@@ -36,4 +37,6 @@ public class SecurityConfigProd {
 
         return http.build();
     }
+
+
 }
