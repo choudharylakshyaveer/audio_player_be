@@ -199,5 +199,5 @@ README.html
 *.iml
 .idea
 .exercism
-/.idea/
-/.idea/
+
+/lucene-index/

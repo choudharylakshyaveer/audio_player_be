@@ -3,10 +3,7 @@ server:
   servlet:
     session:
       timeout: ${SESSION_TIMEOUT:120s}
-
 spring:
-  profiles:
-    active: prod
   application:
     name: ${SPRING_APP_NAME:Audio player BE}
   datasource:
@@ -26,8 +23,6 @@ spring:
     ansi:
       enabled: ALWAYS
       console-available: true
-  main:
-    allow-bean-definition-overriding: true
 
 
     properties:
@@ -41,25 +36,12 @@ logging:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
   level:
     root: INFO
-    org:
-      apache: INFO
-      springframework: INFO
-      hibernate:
-        SQL: DEBUG
-        type:
-          descriptor:
-            sql: TRACE
     spring:
       security: ${SPRING_SECURITY_LOGGING_LEVEL:TRACE}
-  file:
-    name: H:/study/elasticsearch/logs/app.log
 
-security:
-  jwt:
-    secret: superSecretKey12345678901234567890
 
 metadata:
-  folders: "H:"
+  folders: H:\audio_songs, C:\Users\choud\Downloads\Top 50 Single Track
   replacements:
     from: [ "(DJJOhAL.Com)", "(RiskyjaTT.CoM)" ]
     to: ""
@@ -79,7 +61,4 @@ cors:
     - Content-Type
   exposed-headers:
     - Authorization
-    - "Content-Length"
-    - "Content-Range"
   allow-credentials: true
-

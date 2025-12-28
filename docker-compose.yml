@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: audio_player_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+
+  audio_player_be_app:
+    build: .
+    container_name: audio_player_be_app
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${AUDIO_PLAYER_BE_PORT}:8082"
+
+    environment:
+      AUDIO_PLAYER_BE_PORT: ${AUDIO_PLAYER_BE_PORT}
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT}
+      SPRING_APP_NAME: ${SPRING_APP_NAME}
+
+      DB_HOST: mysql
+      DB_PORT: ${MYSQL_PORT}
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_PARAMS: useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+
+      MYSQL_USERNAME: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+      SPRING_SECURITY_LOGGING_LEVEL: ${SPRING_SECURITY_LOGGING_LEVEL}
+      SECURITY_JWT_SECRET: ${SECURITY_JWT_SECRET}
+
+      SCANNING_FOLDERS: /audio-data/songs,/audio-data/top50
+      METADATA_REPLACEMENTS_FROM: ${METADATA_REPLACEMENTS_FROM}
+      METADATA_REPLACEMENTS_TO: ${METADATA_REPLACEMENTS_TO}
+
+      CORS_ALLOWED_ORIGINS: http://${HOST_MACHINE_IP}:3000
+
+    volumes:
+      # Mount Windows host folders into Docker container
+      - H:/audio_songs:/audio-data/songs:ro
+      - C:/Users/choud/Downloads/Top 50 Single Track:/audio-data/top50:ro
+
+volumes:
+  mysql_data:
+    driver: local

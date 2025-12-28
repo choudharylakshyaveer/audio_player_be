@@ -1,33 +1,39 @@
-package org.audio.player.config;
+package org.audio.player.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.util.Set;
 
+@Profile("prod")
 @Component
-public class JwtFilter implements Filter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final SecretKey secretKey;
-
+    private static final Set<String> PUBLIC_PATH_PREFIXES = Set.of(
+            "/stream/flac/",
+            "/saveTrackMetadata",
+            "/actuator/",
+            "/public/"
+    );
     public JwtFilter(@Value("${security.jwt.secret}") String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -56,11 +62,16 @@ public class JwtFilter implements Filter {
             request.setAttribute("username", username);
             request.setAttribute("roles", roles);
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
 
         } catch (Exception e) {
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             httpResponse.getWriter().write("Invalid token: " + e.getMessage());
         }
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return PUBLIC_PATH_PREFIXES.stream().anyMatch(path::startsWith);    }
 }

@@ -1,8 +1,16 @@
 package org.audio.player.dto;
 
-public interface AlbumsDTO {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-    String getAlbum();
-    String getAttachedPicture();
+@Builder
+@Data
+@AllArgsConstructor
+public class AlbumsDTO {
+
+    String album;
+    String attachedPicture;
+
 
 }

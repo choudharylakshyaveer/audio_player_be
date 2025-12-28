@@ -3,6 +3,8 @@ package org.audio.player.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.audio.player.annotations.ReplaceText;
+import org.audio.player.annotations.TextReplaceListener;
 import org.audio.player.converter.StringListConverter;
 
 import java.io.Serializable;
@@ -14,11 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EntityListeners(TextReplaceListener.class)
+@Table(name = "audio_track", uniqueConstraints = @UniqueConstraint(columnNames = {"album", "title", "album_movie_show_title"}))
 public class AudioTrack implements Serializable {
 
-//    @EmbeddedId
-    private AudioTrackId audioTrack;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(nullable = false)
+    private Long id;
 
     private String audioChannelType;
     private String audioSampleRate;
@@ -30,6 +36,7 @@ public class AudioTrack implements Serializable {
 
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "TEXT")
+    @ReplaceText()
     private List<String> artists;
 
     @Convert(converter = StringListConverter.class)
@@ -39,8 +46,14 @@ public class AudioTrack implements Serializable {
     @Column(columnDefinition = "LONGTEXT")
     @Basic(fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private String attached_picture;
+
+    @ReplaceText()
+    @EqualsAndHashCode.Include
     private String album_movie_show_title;
+
+    @ReplaceText()
     private String comments;
     private String year;
     private String genre;
@@ -50,14 +63,12 @@ public class AudioTrack implements Serializable {
     private String samplerate;
     private String composer;
 
-    @Id
+    @Column(name = "file_name", unique = true, nullable = false)
     private String fileName;
-    private String fileExtension;
 
     private String vendor;
     private String albumArtist;
     private String encoder;
-
 
 
     private String encodingType;
@@ -69,4 +80,14 @@ public class AudioTrack implements Serializable {
 
     private String filePath;
 
+    @ReplaceText()
+    @EqualsAndHashCode.Include
+    private String album;
+    @ReplaceText()
+    @EqualsAndHashCode.Include
+    private String title;
+
+
+    private String fileExtension;
+    private int trackLength;
 }
