@@ -13,7 +13,7 @@ WORKDIR /app
 COPY pom.xml .
 # Copies only the pom.xml file into the image first. This allows Docker to cache dependencies, meaning that if your code changes but your dependencies don’t, Docker won’t re-download everything next time you build.
 
-RUN mvn dependency:go-offline -B
+RUN mvn -B -q -DskipTests package || mvn -B -DskipTests package
 # Downloads all dependencies declared in pom.xml ahead of time. The -B flag enables batch mode (non-interactive, faster, cleaner log
 
 

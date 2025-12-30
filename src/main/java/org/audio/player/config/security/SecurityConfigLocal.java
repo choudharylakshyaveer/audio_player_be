@@ -27,6 +27,7 @@ public class SecurityConfigLocal {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(form -> form.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/stream/flac/**").permitAll()
                         .anyRequest().permitAll()
                 );
 
