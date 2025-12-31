@@ -24,11 +24,11 @@ import java.util.List;
 @EnableConfigurationProperties(CorsProperties.class)
 public class SecurityConfigProd {
 
-    private final JwtFilter jwtFilter;
+    private final JwtFilterProd jwtFilterProd;
     private final CorsProperties corsProperties;
 
-    public SecurityConfigProd(JwtFilter jwtFilter, CorsConfigurationSource corsConfigurationSource, CorsProperties corsProperties) {
-        this.jwtFilter = jwtFilter;
+    public SecurityConfigProd(JwtFilterProd jwtFilterProd, CorsConfigurationSource corsConfigurationSource, CorsProperties corsProperties) {
+        this.jwtFilterProd = jwtFilterProd;
         this.corsProperties = corsProperties;
     }
 
@@ -44,7 +44,7 @@ public class SecurityConfigProd {
                         .requestMatchers("/stream/flac/**").permitAll()
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilterProd, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

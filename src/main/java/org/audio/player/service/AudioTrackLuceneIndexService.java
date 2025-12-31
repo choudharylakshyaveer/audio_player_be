@@ -19,7 +19,7 @@ public class AudioTrackLuceneIndexService {
   private final Directory directory;
   private final Analyzer analyzer;
 
-  public void index(AudioTrack track) {
+  public synchronized void index(AudioTrack track) {
     try (IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(analyzer))) {
 
       writer.updateDocument(

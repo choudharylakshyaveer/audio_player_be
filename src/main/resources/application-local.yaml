@@ -3,6 +3,7 @@ server:
   servlet:
     session:
       timeout: ${SESSION_TIMEOUT:120s}
+
 spring:
   application:
     name: ${SPRING_APP_NAME:Audio player BE}
@@ -10,6 +11,15 @@ spring:
     url: jdbc:mysql://localhost:3306/audio_player?useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: mysql
+    hikari:
+      pool-name: HikariPool
+      maximum-pool-size: 32
+      minimum-idle: 2
+      idle-timeout: 600000
+      max-lifetime: 1800000      # 30 minutes
+      connection-timeout: 30000  # 30 seconds
+      validation-timeout: 5000
+      leak-detection-threshold: 20000
   sql:
     init:
       mode: ALWAYS    #change it accordingly
@@ -47,9 +57,7 @@ metadata:
     to: ""
 
 cors:
-  allowed-origins:
-    - "http://100.125.57.120:3000"
-    - "http://localhost:3000"
+  allowed-origins: "http://100.125.57.120:3000, http://localhost:3000"
   allowed-methods:
     - GET
     - POST

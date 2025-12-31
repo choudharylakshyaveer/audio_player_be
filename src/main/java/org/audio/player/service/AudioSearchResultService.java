@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 @Service
 public class AudioSearchResultService {
 
-  //  @Autowired AudioTrackEsRepository audioTrackEsRepository;
 
   @Autowired AudioTrackLuceneSearchService audioTrackLuceneSearchService;
 
