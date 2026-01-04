@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Profile("prod")
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtFilterProd extends OncePerRequestFilter {
 
     private final SecretKey secretKey;
     private static final Set<String> PUBLIC_PATH_PREFIXES = Set.of(
@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
             "/actuator/",
             "/public/"
     );
-    public JwtFilter(@Value("${security.jwt.secret}") String secret) {
+    public JwtFilterProd(@Value("${security.jwt.secret}") String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 

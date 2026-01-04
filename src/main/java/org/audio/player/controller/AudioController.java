@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.audio.player.dto.MetadataScanResult;
+import org.audio.player.dto.PageSearchResultDTO;
 import org.audio.player.entity.AudioTrack;
 import org.audio.player.service.*;
 import org.audio.player.service.StreamTokenService;
@@ -28,6 +29,7 @@ public class AudioController {
   private final AudioService audioService;
   private final AudioSearchService audioSearchService;
     private final StreamTokenService streamTokenService;
+    private final AudioSearchResultService audioSearchResultService;
 
   @GetMapping("/saveTrackMetadata")
   public ResponseEntity<MetadataScanResult> saveTrackMetadata() throws IOException {
@@ -104,4 +106,20 @@ public class AudioController {
     log.info("Executing /search?q={}", searchedValue);
     return ResponseEntity.ok(audioSearchService.getAudioSearchResults(searchedValue));
   }
+
+    @GetMapping("/tracks")
+    public ResponseEntity<PageSearchResultDTO> getTracks(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+
+        PageSearchResultDTO result =
+                audioSearchResultService.getTracks(search, page, size, sortBy, direction);
+
+        return ResponseEntity.ok(result);
+    }
+
 }

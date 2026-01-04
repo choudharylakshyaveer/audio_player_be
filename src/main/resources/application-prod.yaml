@@ -11,6 +11,15 @@ spring:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:audio_player}?${DB_PARAMS:useSSL=false&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true}
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:mysql}
+    hikari:
+      pool-name: HikariPool
+      maximum-pool-size: 32
+      minimum-idle: 2
+      idle-timeout: 600000
+      max-lifetime: 1800000      # 30 minutes
+      connection-timeout: 30000  # 30 seconds
+      validation-timeout: 5000
+      leak-detection-threshold: 20000
   sql:
     init:
       mode: ${SPRING_SQL_INIT_MODE:ALWAYS}
