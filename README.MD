@@ -1,266 +1,204 @@
-Text information frames - details
+# Audio Player Backend (`audio_player_be`)
 
-> TALB
->
-> The 'Album/Movie/Show title' frame is intended for the title of the recording(/source of sound) which the audio in the file is taken from.
->
-> TBPM
->
-> The 'BPM' frame contains the number of beats per minute in the mainpart of the audio. The BPM is an integer and represented as a numerical string.
->
-> TCOM
->
-> The 'Composer(s)' frame is intended for the name of the composer(s). They are seperated with the "/" character.
->
-> TCON
->
-> The 'Content type', which previously was stored as a one byte numeric value only, is now a numeric string. You may use one or several of the types as ID3v1.1 did or, since the category list would be impossible to maintain with accurate and up to date categories, define your own.
->
-> References to the ID3v1 genres can be made by, as first byte, enter "(" followed by a number from the genres list (appendix A.) and ended with a ")" character. This is optionally followed by a refinement, e.g. "(21)" or "(4)Eurodisco". Several references can be made in the same frame, e.g. "(51)(39)". If the refinement should begin with a "(" character it should be replaced with "((", e.g. "((I can figure out any genre)" or "(55)((I think...)". The following new content types is defined in ID3v2 and is implemented in the same way as the numerig content types, e.g. "(RX)".
->
-> > RX Remix CR Cover
->
-> TCOP
->
-> The 'Copyright message' frame, which must begin with a year and a space character (making five characters), is intended for the copyright holder of the original sound, not the audio file itself. The absence of this frame means only that the copyright information is unavailable or has been removed, and must not be interpreted to mean that the sound is public domain. Every time this field is displayed the field must be preceded with "Copyright " (C) " ", where (C) is one character showing a C in a circle.
->
-> TDAT
->
-> The 'Date' frame is a numeric string in the DDMM format containing the date for the recording. This field is always four characters long.
->
-> TDLY
->
-> The 'Playlist delay' defines the numbers of milliseconds of silence between every song in a playlist. The player should use the "ETC" frame, if present, to skip initial silence and silence at the end of the audio to match the 'Playlist delay' time. The time is represented as a numeric string.
->
-> TENC
->
-> The 'Encoded by' frame contains the name of the person or organisation that encoded the audio file. This field may contain a copyright message, if the audio file also is copyrighted by the encoder.
->
-> TEXT
->
-> The 'Lyricist(s)/Text writer(s)' frame is intended for the writer(s) of the text or lyrics in the recording. They are seperated with the "/" character.
->
-> TFLT
->
-> The 'File type' frame indicates which type of audio this tag defines. The following type and refinements are defined:
->
-> > MPG MPEG Audio
-> >
-> > | `/1` | MPEG 1/2 layer I |
-> > | `/2` | MPEG 1/2 layer II |
-> > | `/3` | MPEG 1/2 layer III |
-> >
-> > /2.5 MPEG 2.5 /AAC Advanced audio compression
-> >
-> > VQF Transform-domain Weighted Interleave Vector Quantization PCM Pulse Code Modulated audio
->
-> but other types may be used, not for these types though. This is used in a similar way to the predefined types in the "TMED" frame, but without parentheses. If this frame is not present audio type is assumed to be "MPG".
->
-> TIME
->
-> The 'Time' frame is a numeric string in the HHMM format containing the time for the recording. This field is always four characters long.
->
-> TIT1
->
-> The 'Content group description' frame is used if the sound belongs to a larger category of sounds/music. For example, classical music is often sorted in different musical sections (e.g. "Piano Concerto", "Weather - Hurricane").
->
-> TIT2
->
-> The 'Title/Songname/Content description' frame is the actual name of the piece (e.g. "Adagio", "Hurricane Donna").
->
-> TIT3
->
-> The 'Subtitle/Description refinement' frame is used for information directly related to the contents title (e.g. "Op. 16" or "Performed live at Wembley").
->
-> TKEY
->
-> The 'Initial key' frame contains the musical key in which the sound starts. It is represented as a string with a maximum length of three characters. The ground keys are represented with "A","B","C","D","E", "F" and "G" and halfkeys represented with "b" and "#". Minor is represented as "m". Example "Cbm". Off key is represented with an "o" only.
->
-> TLAN
->
-> The 'Language(s)' frame should contain the languages of the text or lyrics spoken or sung in the audio. The language is represented with three characters according to ISO-639-2. If more than one language is used in the text their language codes should follow according to their usage.
->
-> TLEN
->
-> The 'Length' frame contains the length of the audiofile in milliseconds, represented as a numeric string.
->
-> TMED
->
-> The 'Media type' frame describes from which media the sound originated. This may be a text string or a reference to the predefined media types found in the list below. References are made within "(" and ")" and are optionally followed by a text refinement, e.g. "(MC) with four channels". If a text refinement should begin with a "(" character it should be replaced with "((" in the same way as in the "TCO" frame. Predefined refinements is appended after the media type, e.g. "(CD/A)" or "(VID/PAL/VHS)".
->
-> > DIG Other digital media
-> >
-> > | `/A` | Analog transfer from media |
-> >
-> > ANA Other analog media
-> >
-> > | `/WAC` | Wax cylinder |
-> > | `/8CA` | 8-track tape cassette |
-> >
-> > CD CD
-> >
-> > | `/A` | Analog transfer from media |
-> > | `/DD` | DDD |
-> > | `/AD` | ADD |
-> > | `/AA` | AAD |
-> >
-> > LD Laserdisc
-> >
-> > | `/A` | Analog transfer from media |
-> >
-> > TT Turntable records
-> >
-> > | `/33` | 33.33 rpm |
-> > | `/45` | 45 rpm |
-> > | `/71` | 71.29 rpm |
-> > | `/76` | 76.59 rpm |
-> > | `/78` | 78.26 rpm |
-> > | `/80` | 80 rpm |
-> >
-> > MD MiniDisc
-> >
-> > | `/A` | Analog transfer from media |
-> >
-> > DAT DAT
-> >
-> > | `/A` | Analog transfer from media |
-> > | `/1` | standard, 48 kHz/16 bits, linear |
-> > | `/2` | mode 2, 32 kHz/16 bits, linear |
-> > | `/3` | mode 3, 32 kHz/12 bits, nonlinear, low speed |
-> > | `/4` | mode 4, 32 kHz/12 bits, 4 channels |
-> > | `/5` | mode 5, 44.1 kHz/16 bits, linear |
-> > | `/6` | mode 6, 44.1 kHz/16 bits, 'wide track' play |
-> >
-> > DCC DCC
-> >
-> > | `/A` | Analog transfer from media |
-> >
-> > DVD DVD
-> >
-> > | `/A` | Analog transfer from media |
-> >
-> > TV Television
-> >
-> > | `/PAL` | PAL |
-> > | `/NTSC` | NTSC |
-> > | `/SECAM` | SECAM |
-> >
-> > VID Video
-> >
-> > | `/PAL` | PAL |
-> > | `/NTSC` | NTSC |
-> > | `/SECAM` | SECAM |
-> > | `/VHS` | VHS |
-> > | `/SVHS` | S-VHS |
-> > | `/BETA` | BETAMAX |
-> >
-> > RAD Radio
-> >
-> > | `/FM` | FM |
-> > | `/AM` | AM |
-> > | `/LW` | LW |
-> > | `/MW` | MW |
-> >
-> > TEL Telephone
-> >
-> > | `/I` | ISDN |
-> >
-> > MC MC (normal cassette)
-> >
-> > | `/4` | 4.75 cm/s (normal speed for a two sided cassette) |
-> > | `/9` | 9.5 cm/s |
-> > | `/I` | Type I cassette (ferric/normal) |
-> > | `/II` | Type II cassette (chrome) |
-> > | `/III` | Type III cassette (ferric chrome) |
-> > | `/IV` | Type IV cassette (metal) |
-> >
-> > REE Reel
-> >
-> > | `/9` | 9.5 cm/s |
-> > | `/19` | 19 cm/s |
-> > | `/38` | 38 cm/s |
-> > | `/76` | 76 cm/s |
-> > | `/I` | Type I cassette (ferric/normal) |
-> > | `/II` | Type II cassette (chrome) |
-> > | `/III` | Type III cassette (ferric chrome) |
-> > | `/IV` | Type IV cassette (metal) |
->
-> TOAL
->
-> The 'Original album/movie/show title' frame is intended for the title of the original recording (or source of sound), if for example the music in the file should be a cover of a previously released song.
->
-> TOFN
->
-> The 'Original filename' frame contains the preferred filename for the file, since some media doesn't allow the desired length of the filename. The filename is case sensitive and includes its suffix.
->
-> TOLY
->
-> The 'Original lyricist(s)/text writer(s)' frame is intended for the text writer(s) of the original recording, if for example the music in the file should be a cover of a previously released song. The text writers are seperated with the "/" character.
->
-> TOPE
->
-> The 'Original artist(s)/performer(s)' frame is intended for the performer(s) of the original recording, if for example the music in the file should be a cover of a previously released song. The performers are seperated with the "/" character.
->
-> TORY
->
-> The 'Original release year' frame is intended for the year when the original recording, if for example the music in the file should be a cover of a previously released song, was released. The field is formatted as in the "TYER" frame.
->
-> TOWN
->
-> The 'File owner/licensee' frame contains the name of the owner or licensee of the file and it's contents.
->
-> TPE1
->
-> The 'Lead artist(s)/Lead performer(s)/Soloist(s)/Performing group' is used for the main artist(s). They are seperated with the "/" character.
->
-> TPE2
->
-> The 'Band/Orchestra/Accompaniment' frame is used for additional information about the performers in the recording.
->
-> TPE3
->
-> The 'Conductor' frame is used for the name of the conductor.
->
-> TPE4
->
-> The 'Interpreted, remixed, or otherwise modified by' frame contains more information about the people behind a remix and similar interpretations of another existing piece.
->
-> TPOS
->
-> The 'Part of a set' frame is a numeric string that describes which part of a set the audio came from. This frame is used if the source described in the "TALB" frame is divided into several mediums, e.g. a double CD. The value may be extended with a "/" character and a numeric string containing the total number of parts in the set. E.g. "1/2".
->
-> TPUB
->
-> The 'Publisher' frame simply contains the name of the label or publisher.
->
-> TRCK
->
-> The 'Track number/Position in set' frame is a numeric string containing the order number of the audio-file on its original recording. This may be extended with a "/" character and a numeric string containing the total numer of tracks/elements on the original recording. E.g. "4/9".
->
-> TRDA
->
-> The 'Recording dates' frame is a intended to be used as complement to the "TYER", "TDAT" and "TIME" frames. E.g. "4th-7th June, 12th June" in combination with the "TYER" frame.
->
-> TRSN
->
-> The 'Internet radio station name' frame contains the name of the internet radio station from which the audio is streamed.
->
-> TRSO
->
-> The 'Internet radio station owner' frame contains the name of the owner of the internet radio station from which the audio is streamed.
->
-> TSIZ
->
-> The 'Size' frame contains the size of the audiofile in bytes, excluding the ID3v2 tag, represented as a numeric string.
->
-> TSRC
->
-> The 'ISRC' frame should contain the International Standard Recording Code [ISRC] (12 characters).
->
-> TSSE
->
-> The 'Software/Hardware and settings used for encoding' frame includes the used audio encoder and its settings when the file was encoded. Hardware refers to hardware encoders, not the computer on which a program was run.
->
-> TYER
->
-> The 'Year' frame is a numeric string with a year of the recording. This frames is always four characters long (until the year 10000).
+Spring Boot backend for scanning local audio files (MP3/FLAC), storing metadata in MySQL, indexing tracks with Lucene, serving search APIs, playlist APIs, and secure track streaming.
+
+## Tech Stack
+
+- Java 25 (preview enabled)
+- Spring Boot 3.5.x
+- Spring Data JPA + MySQL
+- Apache Lucene 10.x (search indexing/query)
+- JWT-based request filter + short-lived stream tokens
+- Docker + Docker Compose
+
+## Features
+
+- **Metadata ingestion** from configured folders (`.mp3`, `.flac`).
+- **Metadata cleanup/replacement** via configurable text replacement rules.
+- **Album and track browsing** APIs.
+- **Search support**:
+    - multi-part search endpoint (`/search`) for tracks/artists/albums
+    - paginated endpoint (`/tracks`) with optional search + sorting
+- **Playlist management** APIs (create, add/remove tracks, list playlists).
+- **Protected streaming flow**:
+    1. client sends app JWT in `Authorization: Bearer <jwt>`
+    2. receives short-lived stream token from `/stream/token/{trackId}`
+    3. streams `/stream/flac/{trackId}?token=<stream_token>`
+
+---
+
+## Project Structure
+
+```text
+src/main/java/org/audio/player
+├── controller/        # REST endpoints
+├── service/           # business logic (scan/search/playlist/stream)
+├── entity/            # JPA entities
+├── repository/        # data access + criteria
+├── config/            # security/cors/lucene configuration
+├── dto/               # API response DTOs
+└── utils/             # metadata extractors and streaming utilities
+```
+
+---
+
+## Requirements
+
+- **JDK 25** (project compiler release is 25 with preview enabled)
+- **Maven 3.9+**
+- **MySQL 8+**
+
+> If you use Docker Compose, MySQL and app runtime can be started together.
+
+---
+
+## Configuration
+
+Main config files:
+
+- `src/main/resources/application.yaml` (default; active profile is `prod`)
+- `src/main/resources/application-local.yaml`
+- `src/main/resources/application-prod.yaml`
+
+### Important Properties
+
+- `server.port` (default `8082`)
+- `spring.datasource.*` (MySQL connection)
+- `security.jwt.secret` (JWT validation secret)
+- `metadata.folders` / `SCANNING_FOLDERS` (comma-separated folders to scan)
+- `metadata.replacements.*` (text cleanup rules)
+- `cors.allowed-origins`
+
+### Profile Behavior
+
+- `prod` profile uses `SecurityConfigProd` + `JwtFilterProd`.
+- non-`prod` profiles use `SecurityConfigLocal` + `JwtFilterLocal`.
+- In both cases, `/stream/flac/**` and `OPTIONS` are publicly allowed at filter-chain level; most other routes are validated by JWT filter unless listed in filter skip paths.
+
+---
+
+## Run Locally (Maven)
+
+1. Ensure MySQL is running and credentials in `application-*.yaml` are correct.
+2. Start the app:
+
+```bash
+mvn spring-boot:run
+```
+
+App will be available at:
+
+- `http://localhost:8082`
+
+---
+
+## Run with Docker Compose
+
+1. Create a `.env` file (example):
+
+```env
+AUDIO_PLAYER_BE_PORT=8082
+SESSION_TIMEOUT=120s
+SPRING_APP_NAME=Audio player BE
+
+MYSQL_PORT=3306
+MYSQL_DATABASE=audio_player
+MYSQL_USER=root
+MYSQL_PASSWORD=mysql
+
+SPRING_SECURITY_LOGGING_LEVEL=TRACE
+SECURITY_JWT_SECRET=replace_with_a_long_secret_key
+
+# Comma-separated origins (no quotes required)
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://100.125.57.120:3000
+
+# Metadata text cleanup
+METADATA_REPLACEMENTS_FROM=(DJJOhAL.Com),(RiskyjaTT.CoM)
+METADATA_REPLACEMENTS_TO=
+```
+
+2. Update host path mappings in `docker-compose.yml` for your machine:
+    - `H:/audio_songs:/audio-data/songs:ro`
+    - `C:/Users/choud/Downloads/Top 50 Single Track:/audio-data/top50:ro`
+
+3. Start services:
+
+```bash
+docker compose up --build -d
+```
+
+---
+
+## API Reference
+
+Base URL: `http://localhost:8082`
+
+### Metadata / Library
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/saveTrackMetadata` | Scan configured folders, extract metadata, save new tracks, index in Lucene |
+| GET | `/albums` | Get distinct albums |
+| GET | `/albums?albumName={name}` | Get tracks by album name |
+| GET | `/image/{id}` | Get album image/base64 for track id |
+| GET | `/column/{columnName}` | Get distinct values for a supported column |
+| GET | `/column?columnName={c}&value={v}` | Get tracks filtered by exact column value |
+
+### Search
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/search?q={query}` | Aggregated search result (tracks, artists, albums) |
+| GET | `/tracks?search=&page=0&size=20&sortBy=id&direction=asc` | Paginated track list, optional Lucene search and sort |
+
+### Playlist
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/playlist?name={playlistName}` | Create playlist |
+| POST | `/playlist/{playlistId}/addTrack/{trackId}` | Add track to playlist |
+| GET | `/playlist` | List playlists |
+| GET | `/playlist/{playlistId}` | Get tracks in playlist |
+| DELETE | `/playlist/{playlistId}/removeTrack/{trackId}` | Remove track from playlist |
+
+### Streaming
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/stream/token/{trackId}` | Issue short-lived stream token (requires valid JWT header) |
+| GET | `/stream/flac/{trackId}?token={streamToken}` | Stream FLAC audio if token is valid and not expired |
+
+---
+
+## Example Streaming Flow
+
+```bash
+# 1) Request stream token
+curl -X POST \
+  -H "Authorization: Bearer <APP_JWT>" \
+  http://localhost:8082/stream/token/123
+
+# 2) Response
+# {"token":"<SHORT_LIVED_STREAM_TOKEN>"}
+
+# 3) Stream track
+curl "http://localhost:8082/stream/flac/123?token=<SHORT_LIVED_STREAM_TOKEN>"
+```
+
+---
+
+## Notes / Limitations
+
+- Current streaming endpoint is FLAC-specific: `/stream/flac/{trackId}`.
+- Stream token secret is hardcoded in `StreamTokenService` (`stream-secret-key`); move this to configuration for production hardening.
+- This repository currently has no automated tests under `src/test`.
+
+---
+
+## Build
+
+```bash
+mvn clean package
+```
+
+Generated artifact: `target/*.jar`
